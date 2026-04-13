@@ -48,6 +48,14 @@ body {
   background: #444444;
 }
 
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 ::selection {
   background: rgba(255, 107, 0, 0.3);
   color: #fff;
@@ -74,13 +82,18 @@ input, textarea, select, button {
   to { opacity: 1; transform: scale(1); }
 }
 
+@keyframes scale-in-sheet {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
 
 @keyframes card-appear {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -102,12 +115,27 @@ input, textarea, select, button {
   100% { transform: scale(1); }
 }
 
+@keyframes batch-slide-down {
+  from { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes lightbox-open {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 .animate-fade-in { animation: fade-in 0.15s ease-out both; }
 .animate-scale-in { animation: scale-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-scale-in-sheet { animation: scale-in-sheet 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 .animate-pulse { animation: pulse 1.5s ease-in-out infinite; }
-.animate-card-appear { animation: card-appear 0.3s ease-out both; }
+.animate-card-appear {
+  animation: card-appear 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
 .animate-heart-bounce { animation: heart-bounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 .animate-checkbox-pop { animation: checkbox-pop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-batch-slide-down { animation: batch-slide-down 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-lightbox-open { animation: lightbox-open 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 
 /* ─── CSS Variables — Dark Mode (default) ───────────────────────────────── */
 :root,
@@ -129,6 +157,12 @@ input, textarea, select, button {
   --glass-border: rgba(255, 255, 255, 0.10);
   --glass-blur: blur(20px);
   --glass-blur-heavy: blur(40px);
+
+  /* Card shadows */
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.1);
+  --shadow-card-hover: 0 8px 24px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.1);
+  --shadow-card-selected: 0 0 0 2px var(--brand), 0 8px 24px rgba(255,107,0,0.2);
+  --shadow-chip: 0 2px 8px rgba(255,107,0,0.3);
 }
 
 /* ─── CSS Variables — Light Mode ─────────────────────────────────────────── */
@@ -150,6 +184,12 @@ input, textarea, select, button {
   --glass-border: rgba(0, 0, 0, 0.08);
   --glass-blur: blur(20px);
   --glass-blur-heavy: blur(40px);
+
+  /* Card shadows */
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-card-hover: 0 8px 24px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-card-selected: 0 0 0 2px var(--brand), 0 8px 24px rgba(255,107,0,0.15);
+  --shadow-chip: 0 2px 8px rgba(255,107,0,0.25);
 }
 
 /* ─── Tailwind Custom Classes (color) ───────────────────────────────────── */
@@ -160,8 +200,8 @@ input, textarea, select, button {
 .bg-brand-light { background-color: var(--brand-light); }
 .bg-red-500\/10 { background-color: rgba(239, 68, 68, 0.1); }
 .bg-red-500\/20 { background-color: rgba(239, 68, 68, 0.2); }
-
 .bg-white\/5 { background-color: rgba(255, 255, 255, 0.05); }
+.bg-white\/8 { background-color: rgba(255, 255, 255, 0.08); }
 .bg-white\/10 { background-color: rgba(255, 255, 255, 0.10); }
 .bg-white\/15 { background-color: rgba(255, 255, 255, 0.15); }
 .bg-black\/30 { background-color: rgba(0, 0, 0, 0.30); }
@@ -183,14 +223,21 @@ input, textarea, select, button {
 .text-textSecondary { color: var(--text-secondary); }
 .text-white { color: #FFFFFF; }
 .text-white\/80 { color: rgba(255, 255, 255, 0.80); }
+.text-white\/70 { color: rgba(255, 255, 255, 0.70); }
+.text-white\/60 { color: rgba(255, 255, 255, 0.60); }
 .text-white\/50 { color: rgba(255, 255, 255, 0.50); }
+.text-white\/40 { color: rgba(255, 255, 255, 0.40); }
 .text-brand { color: var(--brand); }
 .text-red-400 { color: var(--red); }
 .text-yellow-400 { color: var(--yellow); }
 .text-black { color: #000000; }
 
+/* ─── Card Shadows ────────────────────────────────────────────────────────── */
+.shadow-card { box-shadow: var(--shadow-card); }
+.shadow-card-hover { box-shadow: var(--shadow-card-hover); }
+.shadow-card-selected { box-shadow: var(--shadow-card-selected); }
+.shadow-chip { box-shadow: var(--shadow-chip); }
 .shadow-brand-glow { box-shadow: 0 0 20px rgba(255, 107, 0, 0.3); }
-
 .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3); }
 .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3); }
 
@@ -257,6 +304,17 @@ input, textarea, select, button {
   background: rgba(0, 0, 0, 0.60);
 }
 
+/* Lightbox backdrop — heavier blur for immersive feel */
+.lightbox-backdrop {
+  backdrop-filter: blur(40px) saturate(150%);
+  -webkit-backdrop-filter: blur(40px) saturate(150%);
+  background: rgba(0, 0, 0, 0.85);
+}
+
+[data-theme="light"] .lightbox-backdrop {
+  background: rgba(0, 0, 0, 0.70);
+}
+
 .glass-modal {
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
@@ -297,17 +355,27 @@ input, textarea, select, button {
   border-color: rgba(0, 0, 0, 0.20);
 }
 
-/* ─── Photo Card Hover Glass ────────────────────────────────────────────── */
-.photo-card-hover {
+/* ─── Photo Card Glass Overlay ──────────────────────────────────────────── */
+.photo-card-glass-overlay {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  background: rgba(255, 255, 255, 0.10);
-  border: 1px solid rgba(255, 255, 255, 0.20);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.70) 0%,
+    rgba(0, 0, 0, 0.30) 40%,
+    rgba(0, 0, 0, 0.10) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-[data-theme="light"] .photo-card-hover {
-  background: rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.15);
+[data-theme="light"] .photo-card-glass-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.20) 40%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+  border: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 /* ─── Lightbox Glass Container ──────────────────────────────────────────── */
@@ -342,11 +410,13 @@ input, textarea, select, button {
 }
 
 @media (min-width: 640px) {
-  .masonry { column-count: 2; }
+  .masonry { column-count: 2; column-gap: 12px; }
+  .masonry-item { margin-bottom: 12px; }
 }
 
 @media (min-width: 1024px) {
-  .masonry { column-count: 3; }
+  .masonry { column-count: 3; column-gap: 16px; }
+  .masonry-item { margin-bottom: 16px; }
 }
 
 @media (min-width: 1400px) {
@@ -355,12 +425,19 @@ input, textarea, select, button {
 
 .masonry-item {
   break-inside: avoid;
-  margin-bottom: 16px;
+}
+
+/* ─── Photo Card Transition ──────────────────────────────────────────────── */
+.photo-card {
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 0.2s ease-out;
 }
 
 /* ─── Transitions ─────────────────────────────────────────────────────────── */
 * {
-  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow;
   transition-timing-function: ease-out;
   transition-duration: 150ms;
 }
@@ -374,8 +451,11 @@ button, a, input, textarea, select {
 /* Override for animations — no transition */
 .animate-fade-in,
 .animate-scale-in,
+.animate-scale-in-sheet,
 .animate-card-appear,
 .animate-heart-bounce,
-.animate-checkbox-pop {
+.animate-checkbox-pop,
+.animate-batch-slide-down,
+.animate-lightbox-open {
   transition: none;
 }

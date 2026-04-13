@@ -3,7 +3,7 @@ import {
   Search, Plus, Images, FolderOpen, X, Upload, ChevronLeft, ChevronRight,
   StickyNote, Trash2, Edit3, Check, Layers, FolderPlus, Sun, Moon, Download,
   Share2, Star, ChevronDown, ZoomIn, Maximize2, Keyboard, Heart,
-  LayoutPanelTop, XCircle, Filter, Menu, Grid3X3, Menu as Hamburger
+  LayoutPanelTop, XCircle, Filter, Menu, Grid3X3, Menu as Hamburger, Hash
 } from 'lucide-react'
 import { getPhotos, savePhotos, getCollections, saveCollections, generateId } from './utils/storage'
 import { useToast } from './hooks/useToast'
@@ -32,7 +32,7 @@ const SORT_OPTIONS = [
 // ─── Shortcuts Modal ─────────────────────────────────────────────────────────
 const ShortcutsModal = ({ onClose }) => (
   <div
-    className="fixed inset-0 z-[70] glass-overlay flex items-center justify-center p-6 animate-fade-in"
+    className="fixed inset-0 z-[70] lightbox-backdrop flex items-center justify-center p-6 animate-fade-in"
     onClick={onClose}
   >
     <div
@@ -109,16 +109,16 @@ const EmptyState = ({ type, onAction }) => {
   }
   const c = configs[type] || configs.photos
   return (
-    <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-      <div className="w-12 h-12 rounded-card bg-card flex items-center justify-center mb-4 glass-card">
-        <c.icon size={20} className="text-textSecondary" />
+    <div className="flex flex-col items-center justify-center py-20 px-6 text-center animate-fade-in">
+      <div className="w-14 h-14 rounded-card bg-card flex items-center justify-center mb-4 glass-card animate-scale-in">
+        <c.icon size={22} className="text-textSecondary" />
       </div>
       <h3 className="text-sm font-semibold text-text mb-1">{c.title}</h3>
       <p className="text-xs text-textSecondary mb-5 max-w-xs">{c.desc}</p>
       {c.action && onAction && (
         <button
           onClick={onAction}
-          className="px-4 py-2 text-xs font-medium bg-brand hover:bg-brand-light text-white rounded-btn transition-all duration-150 flex items-center gap-1.5 hover:scale-[1.02]"
+          className="px-4 py-2 text-xs font-medium bg-brand hover:bg-brand-light text-white rounded-btn transition-all duration-200 flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
         >
           <Plus size={14} /> {c.action}
         </button>
@@ -127,7 +127,6 @@ const EmptyState = ({ type, onAction }) => {
   )
 }
 
-// ─── Lightbox ─────────────────────────────────────────────────────────────────
 // ─── Upload Modal ─────────────────────────────────────────────────────────────
 const UploadModal = ({ onClose, onUpload, collections, currentCollectionId }) => {
   const [dragActive, setDragActive] = useState(false)
@@ -164,7 +163,7 @@ const UploadModal = ({ onClose, onUpload, collections, currentCollectionId }) =>
 
   return (
     <div
-      className="fixed inset-0 z-[60] glass-overlay flex items-center justify-center p-4 animate-fade-in"
+      className="fixed inset-0 z-[60] lightbox-backdrop flex items-center justify-center p-4 animate-fade-in"
       onClick={onClose}
     >
       <div
@@ -183,7 +182,7 @@ const UploadModal = ({ onClose, onUpload, collections, currentCollectionId }) =>
 
         {/* Drop zone */}
         <div
-          className={`relative border-2 border-dashed rounded-card p-6 text-center transition-all duration-150 mb-4 ${
+          className={`relative border-2 border-dashed rounded-card p-8 text-center transition-all duration-200 mb-4 ${
             dragActive
               ? 'border-brand bg-brand/5 scale-[1.01]'
               : 'glass-upload-zone hover:border-brand/60 hover:bg-white/8'
@@ -194,7 +193,7 @@ const UploadModal = ({ onClose, onUpload, collections, currentCollectionId }) =>
         >
           {preview ? (
             <div className="relative">
-              <img src={preview} alt="Preview" className="max-h-40 mx-auto rounded-btn object-contain" />
+              <img src={preview} alt="Preview" className="max-h-44 mx-auto rounded-btn object-contain" />
               {fileInfo && (
                 <div className="mt-2 text-[10px] text-textSecondary text-center">
                   {fileInfo.width}×{fileInfo.height} · {fileInfo.fileSize}
@@ -203,8 +202,10 @@ const UploadModal = ({ onClose, onUpload, collections, currentCollectionId }) =>
             </div>
           ) : (
             <>
-              <Upload size={24} className="mx-auto mb-3 text-textSecondary" />
-              <p className="text-xs text-textSecondary mb-1">Drag & drop or click to browse</p>
+              <div className="w-12 h-12 mx-auto mb-3 rounded-btn bg-card flex items-center justify-center">
+                <Upload size={20} className="text-textSecondary" />
+              </div>
+              <p className="text-xs text-textSecondary mb-1 font-medium">Drag & drop or click to browse</p>
               <p className="text-xs text-textSecondary/50">PNG, JPG, GIF, WEBP</p>
             </>
           )}
@@ -238,7 +239,7 @@ const UploadModal = ({ onClose, onUpload, collections, currentCollectionId }) =>
         <button
           onClick={handleSubmit}
           disabled={!preview}
-          className="w-full py-2.5 bg-brand hover:bg-brand-light disabled:bg-card disabled:text-textSecondary text-white text-xs font-medium rounded-btn transition-all duration-150 flex items-center justify-center gap-1.5 hover:scale-[1.01] disabled:hover:scale-100"
+          className="w-full py-2.5 bg-brand hover:bg-brand-light disabled:bg-card disabled:text-textSecondary text-white text-xs font-medium rounded-btn transition-all duration-200 flex items-center justify-center gap-1.5 hover:scale-[1.01] active:scale-[0.99] disabled:hover:scale-100"
         >
           <Check size={14} /> Save Photo
         </button>
@@ -252,7 +253,7 @@ const CollectionModal = ({ onClose, onSave, collection }) => {
   const [name, setName] = useState(collection?.name || '')
   return (
     <div
-      className="fixed inset-0 z-[60] glass-overlay flex items-center justify-center p-4 animate-fade-in"
+      className="fixed inset-0 z-[60] lightbox-backdrop flex items-center justify-center p-4 animate-fade-in"
       onClick={onClose}
     >
       <div
@@ -281,7 +282,7 @@ const CollectionModal = ({ onClose, onSave, collection }) => {
         <button
           onClick={() => name.trim() && onSave(name.trim())}
           disabled={!name.trim()}
-          className="w-full py-2.5 bg-brand hover:bg-brand-light disabled:bg-card disabled:text-textSecondary text-white text-xs font-medium rounded-btn transition-all duration-150 flex items-center justify-center gap-1.5 hover:scale-[1.01] disabled:hover:scale-100"
+          className="w-full py-2.5 bg-brand hover:bg-brand-light disabled:bg-card disabled:text-textSecondary text-white text-xs font-medium rounded-btn transition-all duration-200 flex items-center justify-center gap-1.5 hover:scale-[1.01] active:scale-[0.99] disabled:hover:scale-100"
         >
           <Check size={14} /> {collection ? 'Update' : 'Create'}
         </button>
@@ -295,32 +296,36 @@ const BatchActionsBar = ({ selected, onDelete, onAddToCollection, onClear, colle
   const [showPicker, setShowPicker] = useState(false)
   if (selected.size === 0) return null
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[55] flex items-center gap-2 px-4 py-3 glass-card rounded-btn shadow-xl animate-scale-in">
-      <span className="text-xs text-textSecondary mr-1">{selected.size} selected</span>
+    <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[55] flex items-center gap-2 px-4 py-3 glass-card rounded-btn shadow-xl animate-batch-slide-down">
+      <span className="text-xs text-textSecondary font-medium">{selected.size} selected</span>
+
+      <div className="w-px h-4 bg-white/10" />
 
       <button
         onClick={() => setShowPicker(p => !p)}
-        className="px-3 py-1.5 bg-card border border-border hover:border-brand text-xs text-text rounded-btn transition-all duration-150 flex items-center gap-1.5 hover:scale-[1.02]"
+        className="px-3 py-1.5 bg-card border border-border hover:border-brand text-xs text-text rounded-btn transition-all duration-150 flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
       >
         <FolderPlus size={12} /> Add to Collection
       </button>
 
       <button
         onClick={onDelete}
-        className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs rounded-btn transition-all duration-150 flex items-center gap-1.5 hover:scale-[1.02]"
+        className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs rounded-btn transition-all duration-150 flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
       >
         <Trash2 size={12} /> Delete
       </button>
 
+      <div className="w-px h-4 bg-white/10" />
+
       <button
         onClick={onClear}
-        className="p-1.5 text-textSecondary hover:text-text transition-all duration-150 hover:scale-[1.05]"
+        className="p-1.5 text-textSecondary hover:text-text transition-all duration-150 hover:scale-[1.05] active:scale-[0.95]"
       >
         <XCircle size={14} />
       </button>
 
       {showPicker && (
-        <div className="absolute bottom-full left-0 mb-2 glass-card rounded-card p-2 shadow-xl min-w-[160px]">
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 glass-card rounded-card p-2 shadow-xl min-w-[160px] animate-scale-in">
           <p className="text-[10px] text-textSecondary uppercase tracking-wider px-2 py-1 mb-1">
             Move to collection
           </p>
@@ -345,9 +350,27 @@ const BatchActionsBar = ({ selected, onDelete, onAddToCollection, onClear, colle
   )
 }
 
+// ─── Collection Cover Mosaic ──────────────────────────────────────────────────
+const CollectionCoverMosaic = ({ photos, count = 4 }) => {
+  const covers = photos.slice(0, count)
+  const emptySlots = count - covers.length
+
+  return (
+    <div className={`grid grid-cols-2 grid-rows-2 w-full h-full gap-px`}>
+      {covers.map((p, i) => (
+        <div key={p.id} className="overflow-hidden">
+          <img src={p.dataUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
+        </div>
+      ))}
+      {Array.from({ length: emptySlots }).map((_, i) => (
+        <div key={`empty-${i}`} className="bg-card" />
+      ))}
+    </div>
+  )
+}
+
 // ─── Photo Card ───────────────────────────────────────────────────────────────
 const PhotoCard = ({ photo, collections, onOpen, onAddToCollection, isSelected, onToggleSelect, onSetCover, onToggleFavorite, showCheckbox, animIndex }) => {
-  const col = collections.find(c => c.id === photo.collectionId)
   const [hovered, setHovered] = useState(false)
   const [heartAnim, setHeartAnim] = useState(false)
   const [checkboxAnim, setCheckboxAnim] = useState(false)
@@ -358,13 +381,15 @@ const PhotoCard = ({ photo, collections, onOpen, onAddToCollection, isSelected, 
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
   }
 
-  const handleToggleSelect = (id) => {
+  const handleToggleSelect = (id, e) => {
+    e.stopPropagation()
     setCheckboxAnim(true)
     setTimeout(() => setCheckboxAnim(false), 200)
     onToggleSelect(id)
   }
 
-  const handleFavorite = (id) => {
+  const handleFavorite = (id, e) => {
+    e.stopPropagation()
     setHeartAnim(true)
     setTimeout(() => setHeartAnim(false), 350)
     onToggleFavorite(id)
@@ -372,10 +397,10 @@ const PhotoCard = ({ photo, collections, onOpen, onAddToCollection, isSelected, 
 
   return (
     <div
-      className="masonry-item group relative"
+      className="masonry-item group/photo relative"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      style={{ animationDelay: `${animIndex * 60}ms` }}
+      style={{ animationDelay: `${animIndex * 40}ms` }}
     >
       {/* Checkbox */}
       {showCheckbox && (
@@ -383,7 +408,7 @@ const PhotoCard = ({ photo, collections, onOpen, onAddToCollection, isSelected, 
           className={`absolute top-2 left-2 z-10 transition-all duration-200 ${
             hovered || isSelected ? 'opacity-100' : 'opacity-0'
           }`}
-          onClick={e => { e.stopPropagation(); handleToggleSelect(photo.id) }}
+          onClick={e => handleToggleSelect(photo.id, e)}
         >
           <div
             className={`w-5 h-5 rounded-btn flex items-center justify-center cursor-pointer transition-all duration-150 ${
@@ -397,30 +422,29 @@ const PhotoCard = ({ photo, collections, onOpen, onAddToCollection, isSelected, 
         </div>
       )}
 
-      {/* Favorite star */}
+      {/* Favorite button */}
       <button
         className={`absolute top-2 right-2 z-10 p-1.5 rounded-btn transition-all duration-200 ${
           hovered || photo.isFavorite ? 'opacity-100' : 'opacity-0'
         } ${photo.isFavorite ? 'text-yellow-400' : 'text-white/60 hover:text-yellow-400'} ${
           heartAnim ? 'animate-heart-bounce' : ''
         }`}
-        onClick={e => { e.stopPropagation(); handleFavorite(photo.id) }}
+        onClick={e => handleFavorite(photo.id, e)}
       >
         <Star size={14} fill={photo.isFavorite ? 'currentColor' : 'none'} />
       </button>
 
       {/* Card */}
       <div
-        className={`relative overflow-hidden rounded-card border border-border cursor-pointer transition-all duration-200 ${
+        className={`relative overflow-hidden rounded-card border border-border cursor-pointer transition-all duration-200 photo-card ${
           isSelected
-            ? 'border-brand shadow-brand-glow'
+            ? 'border-brand shadow-card-selected'
             : hovered
-            ? 'border-white/20 scale-[1.03] shadow-brand-glow'
+            ? 'border-white/20 shadow-card-hover scale-[1.02] translateY(-2px)'
             : ''
         }`}
         onClick={() => onOpen(photo)}
       >
-        {/* Photo */}
         <img
           src={photo.dataUrl}
           alt={photo.note || 'Photo'}
@@ -428,26 +452,26 @@ const PhotoCard = ({ photo, collections, onOpen, onAddToCollection, isSelected, 
           loading="lazy"
         />
 
-        {/* Hover overlay with glass */}
+        {/* Hover overlay */}
         <div
-          className={`absolute inset-0 transition-opacity duration-200 ${
+          className={`absolute inset-0 transition-all duration-200 ${
             hovered ? 'opacity-100' : 'opacity-0'
           }`}
         >
-          <div className="absolute inset-0 photo-card-hover" />
+          <div className="absolute inset-0 photo-card-glass-overlay" />
           <div className="absolute inset-0 flex flex-col justify-end p-3">
-            <div className="text-[10px] text-white/80 space-y-0.5">
+            <div className="text-[10px] text-white/80 space-y-0.5 translate-y-0 transition-transform duration-200">
               {photo.width && photo.height && <div>{photo.width}×{photo.height}</div>}
               {photo.fileSize && <div>{formatSize(photo.fileSize)}</div>}
               <div>{new Date(photo.createdAt).toLocaleDateString()}</div>
-              {photo.note && <div className="truncate">{photo.note}</div>}
+              {photo.note && <div className="truncate opacity-80">{photo.note}</div>}
             </div>
 
-            {/* Action buttons */}
+            {/* Action toolbar */}
             <div className="absolute top-2 right-2 flex flex-col gap-1">
               <button
                 onClick={e => { e.stopPropagation(); onSetCover(photo.id) }}
-                className="p-1.5 glass-card rounded-btn transition-all duration-150 hover:scale-[1.1]"
+                className="p-1.5 glass-card rounded-btn transition-all duration-150 hover:scale-110 active:scale-95"
                 title="Set as cover"
               >
                 <LayoutPanelTop size={12} className="text-textSecondary" />
@@ -473,41 +497,40 @@ const PhotoCard = ({ photo, collections, onOpen, onAddToCollection, isSelected, 
 
 // ─── Collection Card ─────────────────────────────────────────────────────────
 const CollectionCard = ({ collection, photos, onEdit, onDelete, onView, onSetCover, isActive }) => {
-  const count = photos.filter(p => p.collectionId === collection.id).length
-  const coverPhoto =
-    photos.find(p => p.id === collection.coverPhotoId) ||
-    photos.find(p => p.collectionId === collection.id)
+  const colPhotos = photos.filter(p => p.collectionId === collection.id)
+  const coverPhoto = photos.find(p => p.id === collection.coverPhotoId)
 
   return (
     <div
       className={`border rounded-card overflow-hidden transition-all duration-200 group cursor-pointer ${
         isActive
           ? 'border-brand bg-brand/5'
-          : 'border-border hover:border-white/20 hover:scale-[1.02]'
+          : 'border-border hover:border-white/20 hover:scale-[1.02] hover:shadow-card-hover'
       }`}
       onClick={onView}
     >
-      <div className="h-24 bg-card relative">
-        {coverPhoto ? (
-          <img src={coverPhoto.dataUrl} alt={collection.name} className="w-full h-full object-cover" />
+      {/* 4-photo mosaic cover */}
+      <div className="h-24 bg-card relative overflow-hidden">
+        {colPhotos.length > 0 ? (
+          <CollectionCoverMosaic photos={coverPhoto ? [coverPhoto, ...colPhotos.filter(p => p.id !== coverPhoto.id).slice(0, 3)] : colPhotos.slice(0, 4)} count={4} />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <FolderOpen size={24} className="text-textSecondary/30" />
           </div>
         )}
-        {/* Badge */}
         {isActive && (
           <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-btn bg-brand text-[10px] font-medium text-white">
             Active
           </div>
         )}
       </div>
+
       <div className="p-2.5">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
             <h3 className="text-xs font-medium text-text truncate">{collection.name}</h3>
             <p className="text-[11px] text-textSecondary mt-0.5">
-              {count} {count === 1 ? 'photo' : 'photos'}
+              {colPhotos.length} {colPhotos.length === 1 ? 'photo' : 'photos'}
             </p>
           </div>
           <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0">
@@ -533,6 +556,42 @@ const CollectionCard = ({ collection, photos, onEdit, onDelete, onView, onSetCov
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+// ─── Filter Chips ─────────────────────────────────────────────────────────────
+const FilterChips = ({ activeCollection, collections, onSelect, photos }) => {
+  const favCount = photos.filter(p => p.isFavorite).length
+  const chips = [
+    { id: null, label: 'All', count: photos.length },
+    { id: '__favorites__', label: 'Favorites', count: favCount, icon: Star },
+    ...collections.map(c => ({
+      id: c.id,
+      label: c.name,
+      count: photos.filter(p => p.collectionId === c.id).length
+    }))
+  ]
+
+  return (
+    <div className="flex items-center gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+      {chips.filter(c => c.count > 0 || c.id === null).map(chip => (
+        <button
+          key={chip.id ?? 'all'}
+          onClick={() => onSelect(chip.id)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200 flex-shrink-0 ${
+            activeCollection === chip.id
+              ? 'bg-brand text-white shadow-chip'
+              : 'bg-card text-textSecondary hover:text-text hover:bg-white/10 border border-border'
+          }`}
+        >
+          {chip.icon && <chip.icon size={11} />}
+          {chip.label}
+          <span className={`text-[10px] ${activeCollection === chip.id ? 'text-white/70' : 'text-textSecondary/60'}`}>
+            {chip.count}
+          </span>
+        </button>
+      ))}
     </div>
   )
 }
@@ -623,7 +682,7 @@ const App = () => {
   const [batchMode, setBatchMode] = useState(false)
   const [selected, setSelected] = useState(new Set())
   const [showSidebar, setShowSidebar] = useState(true)
-  const [activeCollection, setActiveCollection] = useState(null) // null=all, '__favorites__', or collection id
+  const [activeCollection, setActiveCollection] = useState(null)
   const [mobileCollectionsOpen, setMobileCollectionsOpen] = useState(false)
   const isMobile = useIsMobile()
   const { toasts, addToast, removeToast } = useToast()
@@ -638,7 +697,7 @@ const App = () => {
   useEffect(() => {
     setPhotos(getPhotos())
     setCollections(getCollections())
-    setTimeout(() => setLoading(false), 500)
+    setTimeout(() => setLoading(false), 600)
   }, [])
 
   // System theme detection
@@ -663,11 +722,6 @@ const App = () => {
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [])
-
-  const setTheme = (t) => {
-    setThemeState(t)
-    setTheme(t)
-  }
 
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark')
@@ -826,14 +880,17 @@ const App = () => {
     return result
   }, [photos, searchQuery, sortBy, activeCollection, collections])
 
-  const filteredCollections = collections.filter(c =>
-    c.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
   const lightboxPhotos = filteredPhotos
   const lightboxIndex = lightboxPhotos.findIndex(p => p.id === lightboxPhoto?.id)
   const handleLightboxNext = () => setLightboxPhoto(lightboxPhotos[(lightboxIndex + 1) % lightboxPhotos.length])
   const handleLightboxPrev = () => setLightboxPhoto(lightboxPhotos[(lightboxIndex - 1 + lightboxPhotos.length) % lightboxPhotos.length])
+
+  // Active collection label
+  const activeLabel = useMemo(() => {
+    if (activeCollection === '__favorites__') return 'Favorites'
+    if (activeCollection !== null) return collections.find(c => c.id === activeCollection)?.name || 'Collection'
+    return 'All Photos'
+  }, [activeCollection, collections])
 
   return (
     <div className="min-h-screen pb-24 bg-bg text-text transition-colors duration-200">
@@ -853,7 +910,7 @@ const App = () => {
                 <div className="w-7 h-7 rounded-btn bg-card border border-border flex items-center justify-center">
                   <Images size={13} className="text-brand" />
                 </div>
-                <span className="text-sm font-semibold text-text tracking-tight">
+                <span className="text-sm font-semibold text-text tracking-tight hidden sm:block">
                   gallery<span className="text-brand">.</span>
                 </span>
               </div>
@@ -882,7 +939,7 @@ const App = () => {
               {!isMobile && (
                 <button
                   onClick={() => setShowUpload(true)}
-                  className="px-3 py-1.5 bg-brand hover:bg-brand-light text-white text-xs font-medium rounded-btn transition-all duration-150 flex items-center gap-1.5 hover:scale-[1.02]"
+                  className="px-3 py-1.5 bg-brand hover:bg-brand-light text-white text-xs font-medium rounded-btn transition-all duration-200 flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <Plus size={14} /> Upload
                 </button>
@@ -911,12 +968,23 @@ const App = () => {
               )}
             </div>
           </div>
+
+          {/* Filter chips */}
+          {!isMobile && (
+            <div className="pb-3">
+              <FilterChips
+                activeCollection={activeCollection}
+                collections={collections}
+                onSelect={setActiveCollection}
+                photos={photos}
+              />
+            </div>
+          )}
         </div>
       </header>
 
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 pt-4 flex gap-4">
         {/* Sidebar */}
-        {/* Sidebar: hidden on mobile, replaced by bottom sheet */}
         <div className={isMobile ? 'hidden' : ''}>
           <Sidebar
             collections={collections}
@@ -941,11 +1009,7 @@ const App = () => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2 text-xs text-textSecondary">
               <span className="uppercase tracking-wider font-semibold text-[11px]">
-                {activeCollection === '__favorites__'
-                  ? 'Favorites'
-                  : activeCollection
-                  ? collections.find(c => c.id === activeCollection)?.name || 'Collection'
-                  : 'All Photos'}
+                {activeLabel}
               </span>
               <span>({filteredPhotos.length})</span>
             </div>
@@ -953,7 +1017,7 @@ const App = () => {
             <div className="relative">
               <button
                 onClick={() => setShowSortMenu(m => !m)}
-                className="px-3 py-1.5 glass-card rounded-btn text-xs text-textSecondary hover:text-text transition-all duration-150 flex items-center gap-1.5 hover:scale-[1.02]"
+                className="px-3 py-1.5 glass-card rounded-btn text-xs text-textSecondary hover:text-text transition-all duration-150 flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
               >
                 Sort <ChevronDown size={11} />
               </button>
@@ -985,7 +1049,7 @@ const App = () => {
                 <div key={i} className="masonry-item">
                   <div
                     className="bg-card rounded-card skeleton"
-                    style={{ height: `${Math.floor(Math.random() * 160) + 120}px` }}
+                    style={{ height: `${Math.floor(Math.random() * 180) + 100}px` }}
                   />
                 </div>
               ))}
@@ -1003,7 +1067,7 @@ const App = () => {
           ) : (
             <div className="masonry">
               {filteredPhotos.map((photo, i) => (
-                <div key={photo.id} className="animate-card-appear" style={{ animationDelay: `${i * 60}ms` }}>
+                <div key={photo.id} className="animate-card-appear" style={{ animationDelay: `${i * 40}ms` }}>
                   <PhotoCard
                     photo={photo}
                     collections={collections}
@@ -1092,7 +1156,7 @@ const App = () => {
         collections={collections}
         photos={photos}
         activeCollection={activeCollection}
-        onSelect={setActiveCollection}
+        onSelect={colId => { setActiveCollection(colId); setMobileCollectionsOpen(false) }}
       />
 
       {/* Toast */}

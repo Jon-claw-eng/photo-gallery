@@ -438,7 +438,7 @@ const PhotoCard = ({ photo, collections, onOpen, onAddToCollection, isSelected, 
       <button
         className={`absolute top-2 right-2 z-10 p-1.5 rounded transition-all duration-100 ${
           hovered || photo.isFavorite ? 'opacity-100' : 'opacity-0'
-        } ${photo.isFavorite ? 'text-yellow-400' : 'text-white-60'}`}
+        } ${photo.isFavorite ? 'text-yellow-400' : 'text-white'}`}
         style={photo.isFavorite ? {} : {}}
         onClick={e => { e.stopPropagation(); onToggleFavorite(photo.id) }}
       >
@@ -467,7 +467,7 @@ const PhotoCard = ({ photo, collections, onOpen, onAddToCollection, isSelected, 
             style={{ opacity: hovered ? 0 : 1 }}
           >
             <div className="h-10 note-overlay flex items-end p-2">
-              <span className="text-[10px] text-white-80 truncate block w-full">{photo.note}</span>
+              <span className="text-[10px] text-white truncate block w-full">{photo.note}</span>
             </div>
           </div>
         )}
@@ -478,7 +478,7 @@ const PhotoCard = ({ photo, collections, onOpen, onAddToCollection, isSelected, 
           style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 50%, transparent 100%)' }}
         >
           <div className="absolute inset-0 flex flex-col justify-end p-3">
-            <div className="text-[10px] text-white-80 space-y-0.5">
+            <div className="text-[10px] text-white space-y-0.5">
               {photo.width && photo.height && <div>{photo.width}×{photo.height}</div>}
               {photo.fileSize && <div>{formatSize(photo.fileSize)}</div>}
               <div>{new Date(photo.createdAt).toLocaleDateString()}</div>

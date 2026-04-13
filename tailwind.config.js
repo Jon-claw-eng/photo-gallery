@@ -4,17 +4,19 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: ['class', '[data-theme="dark"]'],
   theme: {
     extend: {
       colors: {
-        bg: '#000000',
-        surface: '#0A0A0A',
-        card: '#111111',
-        border: '#222222',
-        borderHover: '#333333',
-        text: '#FFFFFF',
-        textSecondary: '#888888',
-        accent: '#3B82F6',
+        bg: 'var(--bg)',
+        surface: 'var(--surface)',
+        card: 'var(--card)',
+        border: 'var(--border)',
+        borderHover: 'var(--border-hover)',
+        text: 'var(--text)',
+        textSecondary: 'var(--text-secondary)',
+        accent: 'var(--accent)',
+        accentHover: 'var(--accent-hover)',
       },
       fontFamily: {
         sans: ['Inter', 'Geist', 'system-ui', 'sans-serif'],
@@ -26,13 +28,14 @@ export default {
       },
       transitionDuration: {
         '150': '150ms',
+        '200': '200ms',
       },
       transitionTimingFunction: {
         'ease': 'ease',
       },
       animation: {
-        'fade-in': 'fadeIn 200ms ease',
-        'scale-in': 'scaleIn 200ms ease',
+        'fade-in': 'fadeIn 150ms ease',
+        'scale-in': 'scaleIn 150ms ease',
       },
       keyframes: {
         fadeIn: {
@@ -40,7 +43,7 @@ export default {
           '100%': { opacity: '1' },
         },
         scaleIn: {
-          '0%': { opacity: '0', transform: 'scale(0.98)' },
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
         },
       },

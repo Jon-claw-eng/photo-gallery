@@ -22,12 +22,14 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 #root {
   min-height: 100vh;
 }
 
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -51,13 +53,136 @@ body {
   color: #fff;
 }
 
+/* ─── Focus ──────────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid rgba(59, 130, 246, 0.5);
+  outline-offset: 2px;
+}
+
 input, textarea, select, button {
   font-family: inherit;
 }
 
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-fade-in { animation: fade-in 0.15s ease; }
+.animate-scale-in { animation: scale-in 0.15s ease; }
+.animate-pulse { animation: pulse 1.5s ease-in-out infinite; }
+
+/* ─── Light Mode ─────────────────────────────────────────────────────────── */
+:root,
+[data-theme="dark"] {
+  --bg: #000000;
+  --surface: #111111;
+  --card: #1a1a1a;
+  --border: #222222;
+  --border-hover: #333333;
+  --text: #FFFFFF;
+  --text-secondary: #888888;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --red: #ef4444;
+  --yellow: #eab308;
+}
+
+[data-theme="light"] {
+  --bg: #FFFFFF;
+  --surface: #F7F7F5;
+  --card: #FFFFFF;
+  --border: #E9E9E7;
+  --border-hover: #D4D4D2;
+  --text: #1A1A1A;
+  --text-secondary: #888888;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --red: #ef4444;
+  --yellow: #eab308;
+}
+
+/* ─── Tailwind Custom Classes ────────────────────────────────────────────── */
+.bg-bg { background-color: var(--bg); }
+.bg-surface { background-color: var(--surface); }
+.bg-card { background-color: var(--card); }
+.bg-accent { background-color: var(--accent); }
+.bg-accent\/5 { background-color: rgba(59, 130, 246, 0.05); }
+.bg-accent\/10 { background-color: rgba(59, 130, 246, 0.1); }
+.bg-accent\/20 { background-color: rgba(59, 130, 246, 0.2); }
+.bg-black { background-color: #000000; }
+.bg-black\/50 { background-color: rgba(0, 0, 0, 0.5); }
+.bg-black\/60 { background-color: rgba(0, 0, 0, 0.6); }
+.bg-black\/70 { background-color: rgba(0, 0, 0, 0.7); }
+.bg-black\/80 { background-color: rgba(0, 0, 0, 0.8); }
+.bg-black\/90 { background-color: rgba(0, 0, 0, 0.9); }
+.bg-black\/95 { background-color: rgba(0, 0, 0, 0.95); }
+.bg-black\/10 { background-color: rgba(0, 0, 0, 0.1); }
+.bg-white\/10 { background-color: rgba(255, 255, 255, 0.1); }
+.bg-white\/15 { background-color: rgba(255, 255, 255, 0.15); }
+.bg-red-500\/10 { background-color: rgba(239, 68, 68, 0.1); }
+.bg-red-500\/20 { background-color: rgba(239, 68, 68, 0.2); }
+
+.border-border { border-color: var(--border); }
+.border-borderHover { border-color: var(--border-hover); }
+.border-text { border-color: var(--text); }
+.border-white\/10 { border-color: rgba(255, 255, 255, 0.1); }
+.border-white\/50 { border-color: rgba(255, 255, 255, 0.5); }
+.border-accent { border-color: var(--accent); }
+.border-accent\/30 { border-color: rgba(59, 130, 246, 0.3); }
+.border-dashed { border-style: dashed; }
+
+.text-text { color: var(--text); }
+.text-textSecondary { color: var(--text-secondary); }
+.text-white { color: #FFFFFF; }
+.text-white\/80 { color: rgba(255, 255, 255, 0.8); }
+.text-white\/50 { color: rgba(255, 255, 255, 0.5); }
+.text-accent { color: var(--accent); }
+.text-red-400 { color: var(--red); }
+.text-yellow-400 { color: var(--yellow); }
+.text-black { color: #000000; }
+
+.shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3); }
+.shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3); }
+
+.placeholder-textSecondary\/50::placeholder { color: rgba(136, 136, 136, 0.5); }
+
+.ring-2 { box-shadow: 0 0 0 2px; }
+.ring-accent\/30 { --tw-ring-color: rgba(59, 130, 246, 0.3); }
+
+/* ─── Skeleton Loading ────────────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--card) 25%,
+    var(--border) 50%,
+    var(--card) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── Masonry ────────────────────────────────────────────────────────────── */
 .masonry {
   column-count: 1;
   column-gap: 12px;
+  transition: column-count 0.2s ease;
 }
 
 @media (min-width: 640px) {
@@ -75,4 +200,23 @@ input, textarea, select, button {
 .masonry-item {
   break-inside: avoid;
   margin-bottom: 12px;
+  transition: transform 0.15s ease;
+}
+
+/* ─── Transitions ─────────────────────────────────────────────────────────── */
+* {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: ease;
+  transition-duration: 150ms;
+}
+
+button, a {
+  transition-property: background-color, border-color, color, opacity, transform, box-shadow;
+  transition-timing-function: ease;
+  transition-duration: 150ms;
+}
+
+/* Override for specific transitions */
+.animate-fade-in, .animate-scale-in {
+  transition: none;
 }

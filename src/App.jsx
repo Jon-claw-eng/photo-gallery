@@ -3,10 +3,12 @@ import {
   Search, Plus, Images, FolderOpen, X, Upload, ChevronLeft, ChevronRight,
   StickyNote, Trash2, Edit3, Check, Layers, FolderPlus, Sun, Moon, Download,
   Share2, Star, ChevronDown, ZoomIn, Maximize2, Keyboard, Heart,
-  LayoutPanelTop, XCircle, Filter, Menu, Grid3X3
+  LayoutPanelTop, XCircle, Filter, Menu, Grid3X3, Menu as Hamburger
 } from 'lucide-react'
 import { getPhotos, savePhotos, getCollections, saveCollections, generateId } from './utils/storage'
 import { useToast } from './hooks/useToast'
+import { MobileCollectionsSheet, BottomSheet, FAB, useIsMobile } from './components/MobileBottomSheet'
+import LightboxComponent from './components/Lightbox'
 
 // ─── Theme ───────────────────────────────────────────────────────────────────
 const THEME_KEY = 'cosmos_theme'
@@ -126,197 +128,6 @@ const EmptyState = ({ type, onAction }) => {
 }
 
 // ─── Lightbox ─────────────────────────────────────────────────────────────────
-const Lightbox = ({ photo, photos, onClose, onNext, onPrev, onDelete, onToggleFavorite, onDownload, onCopyLink, addToast }) => {
-  const [zoom, setZoom] = useState(1)
-  const [showInfo, setShowInfo] = useState(false)
-  const imgRef = useRef(null)
-  const containerRef = useRef(null)
-  const [heartAnim, setHeartAnim] = useState(false)
-
-  const info = useMemo(() => {
-    if (!photo) return null
-    return {
-      resolution: photo.width && photo.height ? `${photo.width} × ${photo.height}` : 'Unknown',
-      fileSize: photo.fileSize || null,
-      date: photo.createdAt
-        ? new Date(photo.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
-        : 'Unknown',
-    }
-  }, [photo])
-
-  useEffect(() => {
-    const handleKey = (e) => {
-      if (e.key === 'Escape')     onClose()
-      if (e.key === 'ArrowRight') onNext()
-      if (e.key === 'ArrowLeft')  onPrev()
-      if (e.key === 'f' || e.key === 'F') toggleFullscreen()
-      if (e.key === 'd' || e.key === 'D') onDownload(photo)
-      if (e.key === 's' || e.key === 'S') {
-        onToggleFavorite(photo.id)
-        setHeartAnim(true)
-        setTimeout(() => setHeartAnim(false), 350)
-      }
-      if (e.key === 'c' || e.key === 'C') onCopyLink(photo, addToast)
-      if (e.key === '+' || e.key === '=') setZoom(z => Math.min(z + 0.25, 4))
-      if (e.key === '-') setZoom(z => Math.max(z - 0.25, 0.5))
-    }
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
-  }, [onClose, onNext, onPrev, photo, onDownload, onToggleFavorite, onCopyLink, addToast])
-
-  useEffect(() => { setZoom(1) }, [photo?.id])
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen()
-    } else {
-      document.exitFullscreen()
-    }
-  }
-
-  const handleWheel = (e) => {
-    e.preventDefault()
-    const delta = e.deltaY > 0 ? -0.15 : 0.15
-    setZoom(z => Math.max(0.5, Math.min(4, z + delta)))
-  }
-
-  const currentIndex = photos.findIndex(p => p.id === photo?.id)
-
-  const handleFavorite = () => {
-    onToggleFavorite(photo.id)
-    setHeartAnim(true)
-    setTimeout(() => setHeartAnim(false), 350)
-  }
-
-  return (
-    <div
-      className="fixed inset-0 z-[60] glass-overlay flex items-center justify-center animate-fade-in"
-      onClick={onClose}
-      ref={containerRef}
-      style={{ cursor: zoom > 1 ? 'zoom-out' : 'default' }}
-    >
-      {/* Close */}
-      <button
-        className="absolute top-4 right-4 z-10 text-white/70 hover:text-white transition-all duration-150 p-2 rounded-btn hover:bg-white/10 hover:scale-[1.05]"
-        onClick={onClose}
-      >
-        <X size={20} />
-      </button>
-
-      {/* Prev */}
-      {currentIndex > 0 && (
-        <button
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white/70 hover:text-white transition-all duration-150 p-2.5 rounded-btn glass-card hover:scale-[1.05]"
-          onClick={e => { e.stopPropagation(); onPrev() }}
-        >
-          <ChevronLeft size={26} />
-        </button>
-      )}
-
-      {/* Next */}
-      {currentIndex < photos.length - 1 && (
-        <button
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white/70 hover:text-white transition-all duration-150 p-2.5 rounded-btn glass-card hover:scale-[1.05]"
-          onClick={e => { e.stopPropagation(); onNext() }}
-        >
-          <ChevronRight size={26} />
-        </button>
-      )}
-
-      {/* Image */}
-      <div
-        className="relative flex items-center justify-center w-full h-full overflow-hidden p-8"
-        onClick={e => e.stopPropagation()}
-        onWheel={handleWheel}
-      >
-        <div className="relative rounded-modal overflow-hidden lightbox-photo-container animate-scale-in">
-          <img
-            ref={imgRef}
-            src={photo.dataUrl}
-            alt={photo.note || 'Photo'}
-            className="max-w-[90vw] max-h-[80vh] object-contain rounded-modal transition-transform duration-150"
-            style={{ transform: `scale(${zoom})`, transformOrigin: 'center center' }}
-            onClick={e => { e.stopPropagation(); setZoom(z => z > 1 ? 1 : 2) }}
-            draggable={false}
-          />
-        </div>
-      </div>
-
-      {/* Bottom bar */}
-      <div
-        className="absolute bottom-0 left-0 right-0 px-4 py-3 glass-card border-t border-white/10 animate-fade-in"
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-4 text-xs text-white/60">
-              <button
-                onClick={() => setShowInfo(!showInfo)}
-                className="flex items-center gap-1 hover:text-white transition-colors duration-150"
-              >
-                <ZoomIn size={12} /> {Math.round(zoom * 100)}%
-              </button>
-              {info.resolution && <span>{info.resolution}</span>}
-              {info.fileSize  && <span>{info.fileSize}</span>}
-              <span>{info.date}</span>
-              {photo.note && (
-                <span className="truncate max-w-[200px] text-white/80">{photo.note}</span>
-              )}
-            </div>
-            {showInfo && (
-              <div className="mt-2 text-xs text-white/60 space-y-1">
-                <div>Resolution: {info.resolution}</div>
-                {info.fileSize && <div>Size: {info.fileSize}</div>}
-                <div>Added: {info.date}</div>
-              </div>
-            )}
-          </div>
-
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <button
-              onClick={e => { e.stopPropagation(); onCopyLink(photo, addToast) }}
-              className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-btn transition-all duration-150"
-              title="Copy link (C)"
-            >
-              <Share2 size={15} />
-            </button>
-            <button
-              onClick={e => { e.stopPropagation(); onDownload(photo) }}
-              className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-btn transition-all duration-150"
-              title="Download (D)"
-            >
-              <Download size={15} />
-            </button>
-            <button
-              onClick={e => { e.stopPropagation(); toggleFullscreen() }}
-              className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-btn transition-all duration-150"
-              title="Fullscreen (F)"
-            >
-              <Maximize2 size={15} />
-            </button>
-            <button
-              onClick={e => { e.stopPropagation(); handleFavorite() }}
-              className={`p-2 hover:bg-white/10 rounded-btn transition-all duration-150 ${
-                photo.isFavorite ? 'text-yellow-400' : 'text-white/60 hover:text-yellow-400'
-              } ${heartAnim ? 'animate-heart-bounce' : ''}`}
-              title="Favorite (S)"
-            >
-              <Star size={15} fill={photo.isFavorite ? 'currentColor' : 'none'} />
-            </button>
-            <button
-              onClick={e => { e.stopPropagation(); onDelete(photo.id) }}
-              className="p-2 text-white/60 hover:text-red-400 hover:bg-red-400/10 rounded-btn transition-all duration-150"
-              title="Delete"
-            >
-              <Trash2 size={15} />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 // ─── Upload Modal ─────────────────────────────────────────────────────────────
 const UploadModal = ({ onClose, onUpload, collections, currentCollectionId }) => {
   const [dragActive, setDragActive] = useState(false)
@@ -811,8 +622,10 @@ const App = () => {
   const [showSortMenu, setShowSortMenu] = useState(false)
   const [batchMode, setBatchMode] = useState(false)
   const [selected, setSelected] = useState(new Set())
-  const [showSidebar, setShowSidebar] = useState(true)  // FIX: sidebar visible by default
+  const [showSidebar, setShowSidebar] = useState(true)
   const [activeCollection, setActiveCollection] = useState(null) // null=all, '__favorites__', or collection id
+  const [mobileCollectionsOpen, setMobileCollectionsOpen] = useState(false)
+  const isMobile = useIsMobile()
   const { toasts, addToast, removeToast } = useToast()
   const fileInputRef = useRef(null)
 
@@ -1022,8 +835,6 @@ const App = () => {
   const handleLightboxNext = () => setLightboxPhoto(lightboxPhotos[(lightboxIndex + 1) % lightboxPhotos.length])
   const handleLightboxPrev = () => setLightboxPhoto(lightboxPhotos[(lightboxIndex - 1 + lightboxPhotos.length) % lightboxPhotos.length])
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
-
   return (
     <div className="min-h-screen pb-24 bg-bg text-text transition-colors duration-200">
       {/* ── Header ── */}
@@ -1033,10 +844,10 @@ const App = () => {
             {/* Left: Logo + sidebar toggle */}
             <div className="flex items-center gap-3">
               <button
-                onClick={() => setShowSidebar(s => !s)}
-                className="p-2 text-textSecondary hover:text-text hover:bg-white/10 rounded-btn transition-all duration-150 hover:scale-[1.05]"
+                onClick={() => isMobile ? setMobileCollectionsOpen(true) : setShowSidebar(s => !s)}
+                className="p-2.5 text-textSecondary hover:text-text hover:bg-white/10 rounded-btn transition-all duration-150 active:scale-95"
               >
-                <Menu size={16} />
+                <Menu size={18} />
               </button>
               <div className="flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded-btn bg-card border border-border flex items-center justify-center">
@@ -1068,12 +879,14 @@ const App = () => {
               >
                 <Filter size={15} />
               </button>
-              <button
-                onClick={() => setShowUpload(true)}
-                className="px-3 py-1.5 bg-brand hover:bg-brand-light text-white text-xs font-medium rounded-btn transition-all duration-150 flex items-center gap-1.5 hover:scale-[1.02]"
-              >
-                <Plus size={14} /> Upload
-              </button>
+              {!isMobile && (
+                <button
+                  onClick={() => setShowUpload(true)}
+                  className="px-3 py-1.5 bg-brand hover:bg-brand-light text-white text-xs font-medium rounded-btn transition-all duration-150 flex items-center gap-1.5 hover:scale-[1.02]"
+                >
+                  <Plus size={14} /> Upload
+                </button>
+              )}
             </div>
           </div>
 
@@ -1103,21 +916,24 @@ const App = () => {
 
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 pt-4 flex gap-4">
         {/* Sidebar */}
-        <Sidebar
-          collections={collections}
-          photos={photos}
-          activeCollection={activeCollection}
-          onSelectCollection={setActiveCollection}
-          onNewCollection={() => { setEditingCollection(null); setShowCollection(true) }}
-          onEditCollection={col => { setEditingCollection(col); setShowCollection(true) }}
-          onDeleteCollection={handleDeleteCollection}
-          onSetCover={colId => {
-            setActiveCollection(colId)
-            addToast('Click a photo, then tap cover icon')
-          }}
-          showSidebar={showSidebar}
-          onToggleSidebar={() => setShowSidebar(s => !s)}
-        />
+        {/* Sidebar: hidden on mobile, replaced by bottom sheet */}
+        <div className={isMobile ? 'hidden' : ''}>
+          <Sidebar
+            collections={collections}
+            photos={photos}
+            activeCollection={activeCollection}
+            onSelectCollection={setActiveCollection}
+            onNewCollection={() => { setEditingCollection(null); setShowCollection(true) }}
+            onEditCollection={col => { setEditingCollection(col); setShowCollection(true) }}
+            onDeleteCollection={handleDeleteCollection}
+            onSetCover={colId => {
+              setActiveCollection(colId)
+              addToast('Click a photo, then tap cover icon')
+            }}
+            showSidebar={showSidebar}
+            onToggleSidebar={() => setShowSidebar(s => !s)}
+          />
+        </div>
 
         {/* Main content */}
         <div className="flex-1 min-w-0">
@@ -1230,7 +1046,7 @@ const App = () => {
 
       {/* Modals */}
       {lightboxPhoto && (
-        <Lightbox
+        <LightboxComponent
           photo={lightboxPhoto}
           photos={lightboxPhotos}
           onClose={() => setLightboxPhoto(null)}
@@ -1264,8 +1080,23 @@ const App = () => {
       )}
       {showShortcuts && <ShortcutsModal onClose={() => setShowShortcuts(false)} />}
 
+      {/* FAB: mobile only */}
+      {isMobile && (
+        <FAB onClick={() => setShowUpload(true)} />
+      )}
+
+      {/* Mobile Collections Bottom Sheet */}
+      <MobileCollectionsSheet
+        isOpen={mobileCollectionsOpen}
+        onClose={() => setMobileCollectionsOpen(false)}
+        collections={collections}
+        photos={photos}
+        activeCollection={activeCollection}
+        onSelect={setActiveCollection}
+      />
+
       {/* Toast */}
-      <div className="fixed bottom-6 right-6 z-[100] flex flex-col gap-2 pointer-events-none">
+      <div className={`fixed z-[100] flex flex-col gap-2 pointer-events-none ${isMobile ? 'bottom-24 left-4 right-4' : 'bottom-6 right-6'}`}>
         {toasts.map(toast => (
           <div
             key={toast.id}

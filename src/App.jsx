@@ -23,29 +23,30 @@ const setTheme = (t) => localStorage.setItem(THEME_KEY, t)
 const SORT_OPTIONS = [
   { id: 'date-new',  label: 'Newest first' },
   { id: 'date-old',  label: 'Oldest first' },
-  { id: 'name-az',    label: 'Name A–Z' },
-  { id: 'name-za',    label: 'Name Z–A' },
-  { id: 'size-desc',  label: 'Largest first' },
-  { id: 'size-asc',   label: 'Smallest first' },
+  { id: 'name-az',   label: 'Name A–Z' },
+  { id: 'name-za',   label: 'Name Z–A' },
+  { id: 'size-desc', label: 'Largest first' },
+  { id: 'size-asc',  label: 'Smallest first' },
 ]
 
 // ─── Shortcuts Modal ─────────────────────────────────────────────────────────
 const ShortcutsModal = ({ onClose }) => (
   <div
-    className="fixed inset-0 z-[70] lightbox-backdrop flex items-center justify-center p-6 animate-fade-in"
+    className="fixed inset-0 z-[70] flex items-center justify-center p-6 animate-fade-in"
+    style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
     onClick={onClose}
   >
     <div
-      className="glass-modal rounded-modal w-full max-w-sm p-6 animate-scale-in"
+      className="surface-modal rounded-lg w-full max-w-sm p-6 animate-scale-in"
       onClick={e => e.stopPropagation()}
     >
       <div className="flex items-center justify-between mb-5">
-        <h2 className="text-sm font-semibold text-text tracking-wide flex items-center gap-2">
-          <Keyboard size={15} className="text-brand" /> Keyboard Shortcuts
+        <h2 className="text-sm font-semibold text-text flex items-center gap-2">
+          <Keyboard size={15} className="text-accent" /> Keyboard Shortcuts
         </h2>
         <button
           onClick={onClose}
-          className="text-textSecondary hover:text-text transition-colors duration-150 p-1 rounded-btn hover:bg-white/10"
+          className="text-text-secondary hover:text-text transition-colors duration-100 p-1 rounded"
         >
           <X size={16} />
         </button>
@@ -62,8 +63,8 @@ const ShortcutsModal = ({ onClose }) => (
           ['?',        'Show shortcuts'],
         ].map(([key, desc]) => (
           <div key={key} className="flex items-center justify-between text-xs">
-            <span className="text-textSecondary">{desc}</span>
-            <kbd className="px-2 py-1 bg-card border border-white/10 rounded-btn text-[11px] text-text font-mono">
+            <span className="text-text-secondary">{desc}</span>
+            <kbd className="px-2 py-1 bg-card border border-border rounded text-[11px] text-text font-mono">
               {key}
             </kbd>
           </div>
@@ -110,15 +111,18 @@ const EmptyState = ({ type, onAction }) => {
   const c = configs[type] || configs.photos
   return (
     <div className="flex flex-col items-center justify-center py-20 px-6 text-center animate-fade-in">
-      <div className="w-14 h-14 rounded-card bg-card flex items-center justify-center mb-4 glass-card animate-scale-in">
-        <c.icon size={22} className="text-textSecondary" />
+      <div className="w-14 h-14 rounded flex items-center justify-center mb-4" style={{ backgroundColor: 'var(--card)' }}>
+        <c.icon size={22} className="text-text-secondary" />
       </div>
       <h3 className="text-sm font-semibold text-text mb-1">{c.title}</h3>
-      <p className="text-xs text-textSecondary mb-5 max-w-xs">{c.desc}</p>
+      <p className="text-xs text-text-secondary mb-5 max-w-xs">{c.desc}</p>
       {c.action && onAction && (
         <button
           onClick={onAction}
-          className="px-4 py-2 text-xs font-medium bg-brand hover:bg-brand-light text-white rounded-btn transition-all duration-200 flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
+          className="px-4 py-2 text-xs font-medium text-white rounded transition-colors duration-100 flex items-center gap-1.5"
+          style={{ backgroundColor: 'var(--accent)' }}
+          onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--accent-hover)'}
+          onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--accent)'}
         >
           <Plus size={14} /> {c.action}
         </button>
@@ -163,18 +167,19 @@ const UploadModal = ({ onClose, onUpload, collections, currentCollectionId }) =>
 
   return (
     <div
-      className="fixed inset-0 z-[60] lightbox-backdrop flex items-center justify-center p-4 animate-fade-in"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4 animate-fade-in"
+      style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
       onClick={onClose}
     >
       <div
-        className="glass-modal rounded-modal w-full max-w-md p-6 animate-scale-in"
+        className="surface-modal rounded-lg w-full max-w-md p-6 animate-scale-in"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-sm font-semibold text-text tracking-wide">Upload Photo</h2>
+          <h2 className="text-sm font-semibold text-text">Upload Photo</h2>
           <button
             onClick={onClose}
-            className="text-textSecondary hover:text-text transition-all duration-150 p-1 rounded-btn hover:bg-white/10"
+            className="text-text-secondary hover:text-text transition-colors duration-100 p-1 rounded"
           >
             <X size={16} />
           </button>
@@ -182,31 +187,27 @@ const UploadModal = ({ onClose, onUpload, collections, currentCollectionId }) =>
 
         {/* Drop zone */}
         <div
-          className={`relative border-2 border-dashed rounded-card p-8 text-center transition-all duration-200 mb-4 ${
-            dragActive
-              ? 'border-brand bg-brand/5 scale-[1.01]'
-              : 'glass-upload-zone hover:border-brand/60 hover:bg-white/8'
-          }`}
+          className={`relative p-8 text-center mb-4 transition-all duration-100 ${dragActive ? 'dragging' : 'upload-zone'}`}
           onDragOver={e => { e.preventDefault(); setDragActive(true) }}
           onDragLeave={() => setDragActive(false)}
           onDrop={e => { e.preventDefault(); setDragActive(false); handleFile(e.dataTransfer.files[0]) }}
         >
           {preview ? (
             <div className="relative">
-              <img src={preview} alt="Preview" className="max-h-44 mx-auto rounded-btn object-contain" />
+              <img src={preview} alt="Preview" className="max-h-44 mx-auto rounded object-contain" />
               {fileInfo && (
-                <div className="mt-2 text-[10px] text-textSecondary text-center">
+                <div className="mt-2 text-[10px] text-text-secondary text-center">
                   {fileInfo.width}×{fileInfo.height} · {fileInfo.fileSize}
                 </div>
               )}
             </div>
           ) : (
             <>
-              <div className="w-12 h-12 mx-auto mb-3 rounded-btn bg-card flex items-center justify-center">
-                <Upload size={20} className="text-textSecondary" />
+              <div className="w-12 h-12 mx-auto mb-3 rounded flex items-center justify-center" style={{ backgroundColor: 'var(--card)' }}>
+                <Upload size={20} className="text-text-secondary" />
               </div>
-              <p className="text-xs text-textSecondary mb-1 font-medium">Drag & drop or click to browse</p>
-              <p className="text-xs text-textSecondary/50">PNG, JPG, GIF, WEBP</p>
+              <p className="text-xs text-text-secondary mb-1 font-medium">Drag & drop or click to browse</p>
+              <p className="text-xs text-text-tertiary">PNG, JPG, GIF, WEBP</p>
             </>
           )}
           <input
@@ -221,7 +222,8 @@ const UploadModal = ({ onClose, onUpload, collections, currentCollectionId }) =>
           value={note}
           onChange={e => setNote(e.target.value)}
           placeholder="Add a note (optional)"
-          className="w-full bg-card border border-border rounded-btn px-3 py-2.5 text-xs text-text placeholder-textSecondary/50 focus:outline-none focus:border-brand/50 transition-colors duration-150 resize-none mb-3"
+          className="w-full rounded px-3 py-2.5 text-xs text-text placeholder-text-secondary focus:outline-none focus:border-accent transition-colors duration-100 resize-none mb-3"
+          style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}
           rows={2}
         />
 
@@ -229,7 +231,8 @@ const UploadModal = ({ onClose, onUpload, collections, currentCollectionId }) =>
           <select
             value={selectedCollection}
             onChange={e => setSelectedCollection(e.target.value)}
-            className="w-full bg-card border border-border rounded-btn px-3 py-2.5 text-xs text-text focus:outline-none focus:border-brand/50 transition-colors duration-150 mb-3"
+            className="w-full rounded px-3 py-2.5 text-xs text-text focus:outline-none focus:border-accent transition-colors duration-100 mb-3"
+            style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}
           >
             <option value="">No collection</option>
             {collections.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -239,7 +242,10 @@ const UploadModal = ({ onClose, onUpload, collections, currentCollectionId }) =>
         <button
           onClick={handleSubmit}
           disabled={!preview}
-          className="w-full py-2.5 bg-brand hover:bg-brand-light disabled:bg-card disabled:text-textSecondary text-white text-xs font-medium rounded-btn transition-all duration-200 flex items-center justify-center gap-1.5 hover:scale-[1.01] active:scale-[0.99] disabled:hover:scale-100"
+          className="w-full py-2.5 text-white text-xs font-medium rounded transition-colors duration-100 flex items-center justify-center gap-1.5 disabled:opacity-40"
+          style={{ backgroundColor: preview ? 'var(--accent)' : 'var(--card)' }}
+          onMouseEnter={e => { if (preview) e.currentTarget.style.backgroundColor = 'var(--accent-hover)' }}
+          onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--accent)' }
         >
           <Check size={14} /> Save Photo
         </button>
@@ -253,20 +259,21 @@ const CollectionModal = ({ onClose, onSave, collection }) => {
   const [name, setName] = useState(collection?.name || '')
   return (
     <div
-      className="fixed inset-0 z-[60] lightbox-backdrop flex items-center justify-center p-4 animate-fade-in"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4 animate-fade-in"
+      style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
       onClick={onClose}
     >
       <div
-        className="glass-modal rounded-modal w-full max-w-sm p-6 animate-scale-in"
+        className="surface-modal rounded-lg w-full max-w-sm p-6 animate-scale-in"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-sm font-semibold text-text tracking-wide">
+          <h2 className="text-sm font-semibold text-text">
             {collection ? 'Edit Collection' : 'New Collection'}
           </h2>
           <button
             onClick={onClose}
-            className="text-textSecondary hover:text-text transition-all duration-150 p-1 rounded-btn hover:bg-white/10"
+            className="text-text-secondary hover:text-text transition-colors duration-100 p-1 rounded"
           >
             <X size={16} />
           </button>
@@ -276,13 +283,17 @@ const CollectionModal = ({ onClose, onSave, collection }) => {
           value={name}
           onChange={e => setName(e.target.value)}
           placeholder="Collection name"
-          className="w-full bg-card border border-border rounded-btn px-3 py-2.5 text-xs text-text placeholder-textSecondary/50 focus:outline-none focus:border-brand/50 transition-colors duration-150 mb-3"
+          className="w-full rounded px-3 py-2.5 text-xs text-text placeholder-text-secondary focus:outline-none focus:border-accent transition-colors duration-100 mb-3"
+          style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}
           autoFocus
         />
         <button
           onClick={() => name.trim() && onSave(name.trim())}
           disabled={!name.trim()}
-          className="w-full py-2.5 bg-brand hover:bg-brand-light disabled:bg-card disabled:text-textSecondary text-white text-xs font-medium rounded-btn transition-all duration-200 flex items-center justify-center gap-1.5 hover:scale-[1.01] active:scale-[0.99] disabled:hover:scale-100"
+          className="w-full py-2.5 text-white text-xs font-medium rounded transition-colors duration-100 flex items-center justify-center gap-1.5 disabled:opacity-40"
+          style={{ backgroundColor: name.trim() ? 'var(--accent)' : 'var(--card)' }}
+          onMouseEnter={e => { if (name.trim()) e.currentTarget.style.backgroundColor = 'var(--accent-hover)' }}
+          onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--accent)' }
         >
           <Check size={14} /> {collection ? 'Update' : 'Create'}
         </button>
@@ -296,51 +307,65 @@ const BatchActionsBar = ({ selected, onDelete, onAddToCollection, onClear, colle
   const [showPicker, setShowPicker] = useState(false)
   if (selected.size === 0) return null
   return (
-    <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[55] flex items-center gap-2 px-4 py-3 glass-card rounded-btn shadow-xl animate-batch-slide-down">
-      <span className="text-xs text-textSecondary font-medium">{selected.size} selected</span>
+    <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[55] flex items-center gap-2 px-4 py-3 rounded shadow-lg animate-sheet-up" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+      <span className="text-xs text-text-secondary font-medium">{selected.size} selected</span>
 
-      <div className="w-px h-4 bg-white/10" />
+      <div className="w-px h-4" style={{ backgroundColor: 'var(--border)' }} />
 
       <button
         onClick={() => setShowPicker(p => !p)}
-        className="px-3 py-1.5 bg-card border border-border hover:border-brand text-xs text-text rounded-btn transition-all duration-150 flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
+        className="px-3 py-1.5 rounded text-xs transition-colors duration-100 flex items-center gap-1.5"
+        style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)' }}
+        onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--accent)'}
+        onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
       >
         <FolderPlus size={12} /> Add to Collection
       </button>
 
       <button
         onClick={onDelete}
-        className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs rounded-btn transition-all duration-150 flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
+        className="px-3 py-1.5 rounded text-xs transition-colors duration-100 flex items-center gap-1.5 bg-danger-10"
+        style={{ color: 'var(--danger)' }}
+        onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(239,68,68,0.2)'}
+        onMouseLeave={e => e.currentTarget.style.backgroundColor = 'rgba(239,68,68,0.1)'}
       >
         <Trash2 size={12} /> Delete
       </button>
 
-      <div className="w-px h-4 bg-white/10" />
+      <div className="w-px h-4" style={{ backgroundColor: 'var(--border)' }} />
 
       <button
         onClick={onClear}
-        className="p-1.5 text-textSecondary hover:text-text transition-all duration-150 hover:scale-[1.05] active:scale-[0.95]"
+        className="p-1.5 text-text-secondary hover:text-text transition-colors duration-100 rounded"
+        onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--border)'}
+        onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
       >
         <XCircle size={14} />
       </button>
 
       {showPicker && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 glass-card rounded-card p-2 shadow-xl min-w-[160px] animate-scale-in">
-          <p className="text-[10px] text-textSecondary uppercase tracking-wider px-2 py-1 mb-1">
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 rounded p-2 shadow-lg min-w-[160px] animate-scale-in" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+          <p className="text-[10px] text-text-tertiary uppercase tracking-wider px-2 py-1 mb-1">
             Move to collection
           </p>
           {collections.map(c => (
             <button
               key={c.id}
               onClick={() => { onAddToCollection(c.id); setShowPicker(false) }}
-              className="w-full text-left px-2 py-1.5 text-xs text-text hover:bg-white/10 rounded-btn transition-colors"
+              className="w-full text-left px-2 py-1.5 text-xs rounded transition-colors duration-100"
+              style={{ color: 'var(--text)' }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--border)'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
             >
               {c.name}
             </button>
           ))}
           <button
             onClick={() => { onAddToCollection(null); setShowPicker(false) }}
-            className="w-full text-left px-2 py-1.5 text-xs text-textSecondary hover:bg-white/10 rounded-btn transition-colors"
+            className="w-full text-left px-2 py-1.5 text-xs rounded transition-colors duration-100"
+            style={{ color: 'var(--text-secondary)' }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--border)'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
           >
             Remove from collection
           </button>
@@ -356,7 +381,7 @@ const CollectionCoverMosaic = ({ photos, count = 4 }) => {
   const emptySlots = count - covers.length
 
   return (
-    <div className={`grid grid-cols-2 grid-rows-2 w-full h-full gap-px`}>
+    <div className={`grid grid-cols-2 grid-rows-2 w-full h-full`}>
       {covers.map((p, i) => (
         <div key={p.id} className="overflow-hidden">
           <img src={p.dataUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
@@ -372,8 +397,6 @@ const CollectionCoverMosaic = ({ photos, count = 4 }) => {
 // ─── Photo Card ───────────────────────────────────────────────────────────────
 const PhotoCard = ({ photo, collections, onOpen, onAddToCollection, isSelected, onToggleSelect, onSetCover, onToggleFavorite, showCheckbox, animIndex }) => {
   const [hovered, setHovered] = useState(false)
-  const [heartAnim, setHeartAnim] = useState(false)
-  const [checkboxAnim, setCheckboxAnim] = useState(false)
 
   const formatSize = (bytes) => {
     if (!bytes) return null
@@ -381,68 +404,53 @@ const PhotoCard = ({ photo, collections, onOpen, onAddToCollection, isSelected, 
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
   }
 
-  const handleToggleSelect = (id, e) => {
-    e.stopPropagation()
-    setCheckboxAnim(true)
-    setTimeout(() => setCheckboxAnim(false), 200)
-    onToggleSelect(id)
-  }
-
-  const handleFavorite = (id, e) => {
-    e.stopPropagation()
-    setHeartAnim(true)
-    setTimeout(() => setHeartAnim(false), 350)
-    onToggleFavorite(id)
-  }
-
   return (
     <div
       className="masonry-item group/photo relative"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      style={{ animationDelay: `${animIndex * 40}ms` }}
+      style={{ animationDelay: `${animIndex * 30}ms` }}
     >
       {/* Checkbox */}
       {showCheckbox && (
         <div
-          className={`absolute top-2 left-2 z-10 transition-all duration-200 ${
-            hovered || isSelected ? 'opacity-100' : 'opacity-0'
-          }`}
-          onClick={e => handleToggleSelect(photo.id, e)}
+          className={`absolute top-2 left-2 z-10 transition-opacity duration-100 ${hovered || isSelected ? 'opacity-100' : 'opacity-0'}`}
+          onClick={e => { e.stopPropagation(); onToggleSelect(photo.id) }}
         >
           <div
-            className={`w-5 h-5 rounded-btn flex items-center justify-center cursor-pointer transition-all duration-150 ${
+            className={`w-5 h-5 rounded-full flex items-center justify-center cursor-pointer transition-all duration-100 ${
               isSelected
-                ? 'glass-checkbox-checked animate-checkbox-pop'
-                : 'glass-checkbox'
+                ? 'text-white'
+                : 'border-2'
             }`}
+            style={
+              isSelected
+                ? { backgroundColor: 'var(--accent)', border: '2px solid var(--accent)' }
+                : { backgroundColor: 'rgba(0,0,0,0.5)', border: '2px solid rgba(255,255,255,0.5)' }
+            }
           >
-            {isSelected && <Check size={11} className="text-white" />}
+            {isSelected && <Check size={11} />}
           </div>
         </div>
       )}
 
       {/* Favorite button */}
       <button
-        className={`absolute top-2 right-2 z-10 p-1.5 rounded-btn transition-all duration-200 ${
+        className={`absolute top-2 right-2 z-10 p-1.5 rounded transition-all duration-100 ${
           hovered || photo.isFavorite ? 'opacity-100' : 'opacity-0'
-        } ${photo.isFavorite ? 'text-yellow-400' : 'text-white/60 hover:text-yellow-400'} ${
-          heartAnim ? 'animate-heart-bounce' : ''
-        }`}
-        onClick={e => handleFavorite(photo.id, e)}
+        } ${photo.isFavorite ? 'text-yellow-400' : 'text-white-60'}`}
+        style={photo.isFavorite ? {} : {}}
+        onClick={e => { e.stopPropagation(); onToggleFavorite(photo.id) }}
       >
         <Star size={14} fill={photo.isFavorite ? 'currentColor' : 'none'} />
       </button>
 
       {/* Card */}
       <div
-        className={`relative overflow-hidden rounded-card border border-border cursor-pointer transition-all duration-200 photo-card ${
-          isSelected
-            ? 'border-brand shadow-card-selected'
-            : hovered
-            ? 'border-white/20 shadow-card-hover scale-[1.02] translateY(-2px)'
-            : ''
+        className={`relative overflow-hidden cursor-pointer transition-all duration-100 photo-card-default photo-card-transition ${
+          isSelected ? 'shadow-accent' : hovered ? 'photo-card-hover' : ''
         }`}
+        style={isSelected ? {} : hovered ? {} : {}}
         onClick={() => onOpen(photo)}
       >
         <img
@@ -452,15 +460,25 @@ const PhotoCard = ({ photo, collections, onOpen, onAddToCollection, isSelected, 
           loading="lazy"
         />
 
+        {/* Note preview — gradient at bottom */}
+        {photo.note && (
+          <div
+            className="absolute inset-x-0 bottom-0 max-h-10 overflow-hidden transition-opacity duration-100"
+            style={{ opacity: hovered ? 0 : 1 }}
+          >
+            <div className="h-10 note-overlay flex items-end p-2">
+              <span className="text-[10px] text-white-80 truncate block w-full">{photo.note}</span>
+            </div>
+          </div>
+        )}
+
         {/* Hover overlay */}
         <div
-          className={`absolute inset-0 transition-all duration-200 ${
-            hovered ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`absolute inset-0 transition-opacity duration-100 ${hovered ? 'opacity-100' : 'opacity-0'}`}
+          style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 50%, transparent 100%)' }}
         >
-          <div className="absolute inset-0 photo-card-glass-overlay" />
           <div className="absolute inset-0 flex flex-col justify-end p-3">
-            <div className="text-[10px] text-white/80 space-y-0.5 translate-y-0 transition-transform duration-200">
+            <div className="text-[10px] text-white-80 space-y-0.5">
               {photo.width && photo.height && <div>{photo.width}×{photo.height}</div>}
               {photo.fileSize && <div>{formatSize(photo.fileSize)}</div>}
               <div>{new Date(photo.createdAt).toLocaleDateString()}</div>
@@ -471,16 +489,18 @@ const PhotoCard = ({ photo, collections, onOpen, onAddToCollection, isSelected, 
             <div className="absolute top-2 right-2 flex flex-col gap-1">
               <button
                 onClick={e => { e.stopPropagation(); onSetCover(photo.id) }}
-                className="p-1.5 glass-card rounded-btn transition-all duration-150 hover:scale-110 active:scale-95"
+                className="p-1.5 rounded transition-colors duration-100"
+                style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
                 title="Set as cover"
               >
-                <LayoutPanelTop size={12} className="text-textSecondary" />
+                <LayoutPanelTop size={12} className="text-text-secondary" />
               </button>
               {collections.length > 0 && (
                 <select
                   onClick={e => e.stopPropagation()}
                   onChange={e => onAddToCollection(photo.id, e.target.value || null)}
-                  className="glass-card border-0 rounded-btn px-1.5 py-1 text-[10px] text-textSecondary cursor-pointer"
+                  className="rounded px-1.5 py-1 text-[10px] cursor-pointer"
+                  style={{ backgroundColor: 'rgba(0,0,0,0.5)', color: 'var(--text)' }}
                   value={photo.collectionId || ''}
                 >
                   <option value="">+ Collection</option>
@@ -502,24 +522,24 @@ const CollectionCard = ({ collection, photos, onEdit, onDelete, onView, onSetCov
 
   return (
     <div
-      className={`border rounded-card overflow-hidden transition-all duration-200 group cursor-pointer ${
-        isActive
-          ? 'border-brand bg-brand/5'
-          : 'border-border hover:border-white/20 hover:scale-[1.02] hover:shadow-card-hover'
-      }`}
+      className={`overflow-hidden transition-all duration-100 cursor-pointer`}
+      style={{ borderRadius: '8px' }}
       onClick={onView}
     >
       {/* 4-photo mosaic cover */}
-      <div className="h-24 bg-card relative overflow-hidden">
+      <div className="h-24 bg-card relative overflow-hidden" style={{ borderRadius: '6px 6px 0 0' }}>
         {colPhotos.length > 0 ? (
-          <CollectionCoverMosaic photos={coverPhoto ? [coverPhoto, ...colPhotos.filter(p => p.id !== coverPhoto.id).slice(0, 3)] : colPhotos.slice(0, 4)} count={4} />
+          <CollectionCoverMosaic
+            photos={coverPhoto ? [coverPhoto, ...colPhotos.filter(p => p.id !== coverPhoto.id).slice(0, 3)] : colPhotos.slice(0, 4)}
+            count={4}
+          />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <FolderOpen size={24} className="text-textSecondary/30" />
+            <FolderOpen size={24} className="text-text-tertiary" />
           </div>
         )}
         {isActive && (
-          <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-btn bg-brand text-[10px] font-medium text-white">
+          <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded text-[10px] font-medium text-white" style={{ backgroundColor: 'var(--accent)' }}>
             Active
           </div>
         )}
@@ -529,27 +549,39 @@ const CollectionCard = ({ collection, photos, onEdit, onDelete, onView, onSetCov
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
             <h3 className="text-xs font-medium text-text truncate">{collection.name}</h3>
-            <p className="text-[11px] text-textSecondary mt-0.5">
+            <p className="text-[11px] text-text-secondary mt-0.5">
               {colPhotos.length} {colPhotos.length === 1 ? 'photo' : 'photos'}
             </p>
           </div>
-          <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0">
+          <div className="flex items-center gap-0.5 opacity-0 group-hover/photo:opacity-100 transition-opacity duration-100 flex-shrink-0">
             <button
               onClick={e => { e.stopPropagation(); onSetCover() }}
-              className="p-1 text-textSecondary hover:text-text hover:bg-card rounded-btn transition-all duration-150"
+              className="p-1 rounded transition-colors duration-100"
+              style={{ color: 'var(--text-secondary)' }}
+              onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text)' }
+              }
+              onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)' }}
               title="Set cover"
             >
               <LayoutPanelTop size={11} />
             </button>
             <button
               onClick={e => { e.stopPropagation(); onEdit() }}
-              className="p-1 text-textSecondary hover:text-text hover:bg-card rounded-btn transition-all duration-150"
+              className="p-1 rounded transition-colors duration-100"
+              style={{ color: 'var(--text-secondary)' }}
+              onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text)' }
+              }
+              onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)' }}
             >
               <Edit3 size={11} />
             </button>
             <button
               onClick={e => { e.stopPropagation(); onDelete() }}
-              className="p-1 text-textSecondary hover:text-red-400 hover:bg-red-400/10 rounded-btn transition-all duration-150"
+              className="p-1 rounded transition-colors duration-100"
+              style={{ color: 'var(--text-secondary)' }}
+              onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(239,68,68,0.1)'; e.currentTarget.style.color = 'var(--danger)' }
+              }
+              onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)' }}
             >
               <Trash2 size={11} />
             </button>
@@ -579,15 +611,30 @@ const FilterChips = ({ activeCollection, collections, onSelect, photos }) => {
         <button
           key={chip.id ?? 'all'}
           onClick={() => onSelect(chip.id)}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200 flex-shrink-0 ${
-            activeCollection === chip.id
-              ? 'bg-brand text-white shadow-chip'
-              : 'bg-card text-textSecondary hover:text-text hover:bg-white/10 border border-border'
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium whitespace-nowrap transition-all duration-100 flex-shrink-0 ${
+            activeCollection === chip.id ? 'text-white' : ''
           }`}
+          style={
+            activeCollection === chip.id
+              ? { backgroundColor: 'var(--accent)' }
+              : { backgroundColor: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }
+          }
+          onMouseEnter={e => {
+            if (activeCollection !== chip.id) {
+              e.currentTarget.style.borderColor = 'var(--border-hover)'
+              e.currentTarget.style.color = 'var(--text)'
+            }
+          }}
+          onMouseLeave={e => {
+            if (activeCollection !== chip.id) {
+              e.currentTarget.style.borderColor = 'var(--border)'
+              e.currentTarget.style.color = 'var(--text-secondary)'
+            }
+          }}
         >
           {chip.icon && <chip.icon size={11} />}
           {chip.label}
-          <span className={`text-[10px] ${activeCollection === chip.id ? 'text-white/70' : 'text-textSecondary/60'}`}>
+          <span className={`text-[10px] ${activeCollection === chip.id ? 'text-white-70' : 'text-text-tertiary'}`}>
             {chip.count}
           </span>
         </button>
@@ -603,47 +650,47 @@ const Sidebar = ({ collections, photos, activeCollection, onSelectCollection, on
   const favCount = photos.filter(p => p.isFavorite).length
 
   return (
-    <aside className="w-[280px] flex-shrink-0 glass-sidebar overflow-y-auto"
-      style={{ height: 'calc(100vh - 56px)' }}>
+    <aside className="w-[260px] flex-shrink-0 sidebar overflow-y-auto" style={{ height: 'calc(100vh - 56px)' }}>
       <div className="p-3 space-y-1">
         {/* All Photos */}
         <button
           onClick={() => onSelectCollection(null)}
-          className={`w-full text-left px-3 py-2 rounded-btn text-xs transition-all duration-200 flex items-center gap-2 ${
-            activeCollection === null
-              ? 'bg-gradient-to-r from-brand/20 to-transparent text-brand border-l-2 border-brand'
-              : 'text-textSecondary hover:text-text hover:bg-white/5 border-l-2 border-transparent'
+          className={`w-full text-left px-3 py-2 rounded text-xs transition-all duration-100 flex items-center gap-2 ${
+            activeCollection === null ? 'active' : 'collection-item'
           }`}
+          style={activeCollection === null ? {} : { color: 'var(--text-secondary)' }}
         >
           <Grid3X3 size={13} /> All Photos
-          <span className="ml-auto text-[10px] text-textSecondary/60">{photos.length}</span>
+          <span className="ml-auto text-[10px]" style={{ color: 'var(--text-tertiary)' }}>{photos.length}</span>
         </button>
 
         {/* Favorites */}
         <button
           onClick={() => onSelectCollection('__favorites__')}
-          className={`w-full text-left px-3 py-2 rounded-btn text-xs transition-all duration-200 flex items-center gap-2 ${
-            activeCollection === '__favorites__'
-              ? 'bg-gradient-to-r from-brand/20 to-transparent text-brand border-l-2 border-brand'
-              : 'text-textSecondary hover:text-text hover:bg-white/5 border-l-2 border-transparent'
+          className={`w-full text-left px-3 py-2 rounded text-xs transition-all duration-100 flex items-center gap-2 ${
+            activeCollection === '__favorites__' ? 'active' : 'collection-item'
           }`}
+          style={activeCollection === '__favorites__' ? {} : { color: 'var(--text-secondary)' }}
         >
           <Star size={13} /> Favorites
-          <span className="ml-auto text-[10px] text-textSecondary/60">{favCount}</span>
+          <span className="ml-auto text-[10px]" style={{ color: 'var(--text-tertiary)' }}>{favCount}</span>
         </button>
 
         <div className="pt-3 pb-1 px-3 flex items-center justify-between">
-          <span className="text-[10px] text-textSecondary uppercase tracking-wider font-semibold">Collections</span>
+          <span className="text-[10px] text-text-tertiary uppercase tracking-wider font-semibold">Collections</span>
           <button
             onClick={onNewCollection}
-            className="p-1 text-textSecondary hover:text-brand transition-all duration-150 hover:scale-[1.1]"
+            className="p-1 rounded transition-colors duration-100"
+            style={{ color: 'var(--text-secondary)' }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)' }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)' }}
           >
             <FolderPlus size={12} />
           </button>
         </div>
 
         {collections.length === 0 && (
-          <p className="text-[10px] text-textSecondary/50 px-3 py-2 text-center">
+          <p className="text-[10px] text-text-tertiary px-3 py-2 text-center">
             No collections yet
           </p>
         )}
@@ -846,14 +893,12 @@ const App = () => {
   const filteredPhotos = useMemo(() => {
     let result = [...photos]
 
-    // Collection filter
     if (activeCollection === '__favorites__') {
       result = result.filter(p => p.isFavorite)
     } else if (activeCollection !== null) {
       result = result.filter(p => p.collectionId === activeCollection)
     }
 
-    // Search
     if (searchQuery) {
       const q = searchQuery.toLowerCase()
       result = result.filter(p => {
@@ -864,7 +909,6 @@ const App = () => {
       })
     }
 
-    // Sort
     result.sort((a, b) => {
       switch (sortBy) {
         case 'date-new': return new Date(b.createdAt) - new Date(a.createdAt)
@@ -893,25 +937,28 @@ const App = () => {
   }, [activeCollection, collections])
 
   return (
-    <div className="min-h-screen pb-24 bg-bg text-text transition-colors duration-200">
+    <div className="min-h-screen pb-24 text-text transition-colors duration-200" style={{ backgroundColor: 'var(--bg)' }}>
       {/* ── Header ── */}
-      <header className="sticky top-0 z-40 glass-nav transition-colors duration-200">
+      <header className="sticky top-0 z-40 surface-nav transition-colors duration-200">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             {/* Left: Logo + sidebar toggle */}
             <div className="flex items-center gap-3">
               <button
                 onClick={() => isMobile ? setMobileCollectionsOpen(true) : setShowSidebar(s => !s)}
-                className="p-2.5 text-textSecondary hover:text-text hover:bg-white/10 rounded-btn transition-all duration-150 active:scale-95"
+                className="p-2.5 rounded transition-colors duration-100"
+                style={{ color: 'var(--text-secondary)' }}
+                onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text)' }}
+                onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)' }}
               >
                 <Menu size={18} />
               </button>
               <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-btn bg-card border border-border flex items-center justify-center">
-                  <Images size={13} className="text-brand" />
+                <div className="w-7 h-7 rounded flex items-center justify-center" style={{ backgroundColor: 'var(--card)' }}>
+                  <Images size={13} className="text-accent" />
                 </div>
                 <span className="text-sm font-semibold text-text tracking-tight hidden sm:block">
-                  gallery<span className="text-brand">.</span>
+                  gallery<span className="text-accent">.</span>
                 </span>
               </div>
             </div>
@@ -920,26 +967,43 @@ const App = () => {
             <div className="flex items-center gap-1.5">
               <button
                 onClick={toggleTheme}
-                className="p-2 text-textSecondary hover:text-text hover:bg-white/10 rounded-btn transition-all duration-150 hover:scale-[1.05]"
+                className="p-2 rounded transition-colors duration-100"
+                style={{ color: 'var(--text-secondary)' }}
                 title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+                onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text)' }}
+                onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)' }}
               >
                 {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
               </button>
               <button
                 onClick={() => setBatchMode(b => !b)}
-                className={`p-2 rounded-btn transition-all duration-150 hover:scale-[1.05] ${
-                  batchMode
-                    ? 'bg-brand text-white'
-                    : 'text-textSecondary hover:text-text hover:bg-white/10'
+                className={`p-2 rounded transition-colors duration-100 ${
+                  batchMode ? 'text-white' : ''
                 }`}
+                style={batchMode ? { backgroundColor: 'var(--accent)' } : { color: 'var(--text-secondary)' }}
                 title="Batch select"
+                onMouseEnter={e => {
+                  if (!batchMode) {
+                    e.currentTarget.style.backgroundColor = 'var(--border)'
+                    e.currentTarget.style.color = 'var(--text)'
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!batchMode) {
+                    e.currentTarget.style.backgroundColor = 'transparent'
+                    e.currentTarget.style.color = 'var(--text-secondary)'
+                  }
+                }}
               >
                 <Filter size={15} />
               </button>
               {!isMobile && (
                 <button
                   onClick={() => setShowUpload(true)}
-                  className="px-3 py-1.5 bg-brand hover:bg-brand-light text-white text-xs font-medium rounded-btn transition-all duration-200 flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
+                  className="px-3 py-1.5 text-white text-xs font-medium rounded transition-colors duration-100 flex items-center gap-1.5"
+                  style={{ backgroundColor: 'var(--accent)' }}
+                  onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--accent-hover)'}
+                  onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--accent)'}
                 >
                   <Plus size={14} /> Upload
                 </button>
@@ -950,18 +1014,24 @@ const App = () => {
           {/* Search bar */}
           <div className="pb-3">
             <div className="relative max-w-md">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary" />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary)' }} />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search photos and collections..."
-                className="w-full bg-card border border-border rounded-btn pl-9 pr-3 py-2 text-xs text-text placeholder-textSecondary/50 focus:outline-none focus:border-brand/50 transition-colors duration-150"
+                className="w-full rounded pl-9 pr-3 py-2 text-xs text-text placeholder-text-secondary focus:outline-none transition-colors duration-100"
+                style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}
+                onFocus={e => e.currentTarget.style.borderColor = 'var(--accent)'}
+                onBlur={e => e.currentTarget.style.borderColor = 'var(--border)'}
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-textSecondary hover:text-text transition-colors duration-150 p-0.5"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-100 p-0.5 rounded"
+                  style={{ color: 'var(--text-secondary)' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--text)' }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)' }}
                 >
                   <X size={12} />
                 </button>
@@ -1007,8 +1077,8 @@ const App = () => {
         <div className="flex-1 min-w-0">
           {/* Sort bar */}
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2 text-xs text-textSecondary">
-              <span className="uppercase tracking-wider font-semibold text-[11px]">
+            <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-secondary)' }}>
+              <span className="uppercase tracking-wider font-semibold text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
                 {activeLabel}
               </span>
               <span>({filteredPhotos.length})</span>
@@ -1017,21 +1087,25 @@ const App = () => {
             <div className="relative">
               <button
                 onClick={() => setShowSortMenu(m => !m)}
-                className="px-3 py-1.5 glass-card rounded-btn text-xs text-textSecondary hover:text-text transition-all duration-150 flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
+                className="px-3 py-1.5 rounded text-xs flex items-center gap-1.5 transition-colors duration-100"
+                style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-hover)'; e.currentTarget.style.color = 'var(--text)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-secondary)' }}
               >
                 Sort <ChevronDown size={11} />
               </button>
               {showSortMenu && (
-                <div className="absolute top-full right-0 mt-1 glass-card rounded-card p-1 shadow-xl z-30 min-w-[140px] animate-scale-in">
+                <div className="absolute top-full right-0 mt-1 rounded p-1 shadow-lg z-30 min-w-[140px] animate-scale-in" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
                   {SORT_OPTIONS.map(opt => (
                     <button
                       key={opt.id}
                       onClick={() => { setSortBy(opt.id); setShowSortMenu(false) }}
-                      className={`w-full text-left px-3 py-2 text-xs rounded-btn transition-colors duration-150 flex items-center justify-between ${
-                        sortBy === opt.id
-                          ? 'text-brand bg-brand/10'
-                          : 'text-text hover:bg-white/10'
+                      className={`w-full text-left px-3 py-2 text-xs rounded flex items-center justify-between transition-colors duration-100 ${
+                        sortBy === opt.id ? 'text-accent' : ''
                       }`}
+                      style={sortBy === opt.id ? {} : { color: 'var(--text)' }}
+                      onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--border)'}
+                      onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
                       {opt.label}
                       {sortBy === opt.id && <Check size={10} />}
@@ -1048,8 +1122,8 @@ const App = () => {
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="masonry-item">
                   <div
-                    className="bg-card rounded-card skeleton"
-                    style={{ height: `${Math.floor(Math.random() * 180) + 100}px` }}
+                    className="rounded animate-skeleton"
+                    style={{ height: `${Math.floor(Math.random() * 180) + 100}px`, backgroundColor: 'var(--card)' }}
                   />
                 </div>
               ))}
@@ -1067,7 +1141,7 @@ const App = () => {
           ) : (
             <div className="masonry">
               {filteredPhotos.map((photo, i) => (
-                <div key={photo.id} className="animate-card-appear" style={{ animationDelay: `${i * 40}ms` }}>
+                <div key={photo.id} className="animate-card-load" style={{ animationDelay: `${i * 30}ms` }}>
                   <PhotoCard
                     photo={photo}
                     collections={collections}
@@ -1164,12 +1238,16 @@ const App = () => {
         {toasts.map(toast => (
           <div
             key={toast.id}
-            className="glass-toast px-4 py-3 rounded-btn text-xs flex items-center gap-3 text-text shadow-xl pointer-events-auto animate-scale-in"
+            className="px-4 py-3 rounded text-xs flex items-center gap-3 shadow-lg pointer-events-auto animate-scale-in"
+            style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}
           >
             <span>{toast.message}</span>
             <button
               onClick={() => removeToast(toast.id)}
-              className="text-textSecondary hover:text-text transition-colors duration-150"
+              className="transition-colors duration-100 rounded p-0.5"
+              style={{ color: 'var(--text-secondary)' }}
+              onMouseEnter={e => { e.currentTarget.style.color = 'var(--text)' }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)' }}
             >
               <X size={12} />
             </button>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import {
   X, ChevronLeft, ChevronRight, Heart, Download, Share2, Maximize2,
-  Info, ZoomIn, ZoomOut
+  ZoomIn, ZoomOut
 } from 'lucide-react'
 
 // ─── Lightbox ─────────────────────────────────────────────────────────────────
@@ -117,12 +117,10 @@ const Lightbox = ({
 
   const handleTouchEnd = (e) => {
     if (e.touches.length === 0) {
-      // Swipe left/right to navigate
       if (zoom <= 1 && Math.abs(dragDeltaX.current) > 60) {
         if (dragDeltaX.current > 0) onPrev()
         else onNext()
       }
-      // Swipe down to close
       if (zoom <= 1 && dragDeltaY.current > 80 && Math.abs(dragDeltaX.current) < 40) {
         onClose()
       }
@@ -146,13 +144,12 @@ const Lightbox = ({
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex flex-col items-center justify-center animate-fade-in"
-      style={{ background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }}
+      className="fixed inset-0 z-[60] flex flex-col items-center justify-center animate-fade-in lb-backdrop"
       ref={containerRef}
     >
       {/* Top bar */}
       <div
-        className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-3 transition-all duration-300"
+        className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-3 transition-all duration-200"
         style={{
           background: showControls ? 'linear-gradient(to bottom, rgba(0,0,0,0.6), transparent)' : 'transparent',
           opacity: showControls ? 1 : 0
@@ -160,61 +157,82 @@ const Lightbox = ({
       >
         <button
           onClick={onClose}
-          className="w-11 h-11 flex items-center justify-center text-white/70 hover:text-white rounded-full hover:bg-white/10 transition-all duration-150 active:scale-95"
+          className="w-11 h-11 flex items-center justify-center text-white-70 rounded transition-colors duration-100"
+          onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#fff' }}
+          onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
+          style={{ color: 'rgba(255,255,255,0.7)' }}
         >
           <X size={20} />
         </button>
 
-        <div className="flex items-center gap-0.5 px-2 py-1 rounded-btn glass-card text-xs text-white/70">
+        <div className="flex items-center px-2.5 py-1 rounded text-xs" style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)' }}>
           {currentIndex + 1} / {photos.length}
         </div>
 
         <div className="flex items-center gap-0.5">
           <button
             onClick={triggerFavorite}
-            className="w-11 h-11 flex items-center justify-center text-white/70 hover:text-yellow-400 rounded-full hover:bg-white/10 transition-all duration-150 active:scale-95"
+            className="w-11 h-11 flex items-center justify-center rounded transition-colors duration-100"
+            style={{ color: photo.isFavorite ? '#FBBF24' : 'rgba(255,255,255,0.7)' }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)' }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent' }}
           >
-            <Heart
-              size={18}
-              className={photo.isFavorite ? 'text-yellow-400 fill-yellow-400' : ''}
-            />
+            <Heart size={18} fill={photo.isFavorite ? 'currentColor' : 'none'} />
           </button>
           <button
             onClick={handleZoomOut}
-            className="w-11 h-11 flex items-center justify-center text-white/70 hover:text-white rounded-full hover:bg-white/10 transition-all duration-150 active:scale-95"
+            className="w-11 h-11 flex items-center justify-center rounded transition-colors duration-100"
+            style={{ color: 'rgba(255,255,255,0.7)' }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)' }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent' }}
             title="Zoom out (-)"
           >
             <ZoomOut size={18} />
           </button>
           <button
             onClick={toggleZoom}
-            className="w-11 h-11 flex items-center justify-center text-white/70 hover:text-white rounded-full hover:bg-white/10 transition-all duration-150 active:scale-95 min-w-[44px]"
+            className="w-11 h-11 flex items-center justify-center rounded transition-colors duration-100 min-w-[44px]"
+            style={{ color: 'rgba(255,255,255,0.7)' }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)' }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent' }}
             title="Toggle zoom"
           >
             <span className="text-xs font-medium">{Math.round(zoom * 100)}%</span>
           </button>
           <button
             onClick={handleZoomIn}
-            className="w-11 h-11 flex items-center justify-center text-white/70 hover:text-white rounded-full hover:bg-white/10 transition-all duration-150 active:scale-95"
+            className="w-11 h-11 flex items-center justify-center rounded transition-colors duration-100"
+            style={{ color: 'rgba(255,255,255,0.7)' }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)' }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent' }}
             title="Zoom in (+)"
           >
             <ZoomIn size={18} />
           </button>
           <button
             onClick={() => onDownload(photo)}
-            className="w-11 h-11 flex items-center justify-center text-white/70 hover:text-white rounded-full hover:bg-white/10 transition-all duration-150 active:scale-95"
+            className="w-11 h-11 flex items-center justify-center rounded transition-colors duration-100"
+            style={{ color: 'rgba(255,255,255,0.7)' }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)' }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent' }}
           >
             <Download size={18} />
           </button>
           <button
             onClick={() => onCopyLink(photo, addToast)}
-            className="w-11 h-11 flex items-center justify-center text-white/70 hover:text-white rounded-full hover:bg-white/10 transition-all duration-150 active:scale-95"
+            className="w-11 h-11 flex items-center justify-center rounded transition-colors duration-100"
+            style={{ color: 'rgba(255,255,255,0.7)' }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)' }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent' }}
           >
             <Share2 size={18} />
           </button>
           <button
             onClick={toggleFullscreen}
-            className="w-11 h-11 flex items-center justify-center text-white/70 hover:text-white rounded-full hover:bg-white/10 transition-all duration-150 active:scale-95"
+            className="w-11 h-11 flex items-center justify-center rounded transition-colors duration-100"
+            style={{ color: 'rgba(255,255,255,0.7)' }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)' }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent' }}
           >
             <Maximize2 size={16} />
           </button>
@@ -224,20 +242,20 @@ const Lightbox = ({
       {/* Nav arrows */}
       {currentIndex > 0 && (
         <button
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center text-white/60 hover:text-white rounded-full glass-card transition-all duration-200 hover:scale-105 active:scale-95"
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full lb-nav-btn transition-all duration-100"
           style={{ opacity: showControls ? 1 : 0 }}
           onClick={e => { e.stopPropagation(); onPrev() }}
         >
-          <ChevronLeft size={24} />
+          <ChevronLeft size={24} style={{ color: 'rgba(255,255,255,0.8)' }} />
         </button>
       )}
       {currentIndex < photos.length - 1 && (
         <button
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center text-white/60 hover:text-white rounded-full glass-card transition-all duration-200 hover:scale-105 active:scale-95"
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full lb-nav-btn transition-all duration-100"
           style={{ opacity: showControls ? 1 : 0 }}
           onClick={e => { e.stopPropagation(); onNext() }}
         >
-          <ChevronRight size={24} />
+          <ChevronRight size={24} style={{ color: 'rgba(255,255,255,0.8)' }} />
         </button>
       )}
 
@@ -252,11 +270,11 @@ const Lightbox = ({
         style={{ cursor: zoom > 1 ? 'zoom-out' : 'pointer' }}
       >
         <div
-          className="animate-lightbox-open"
+          className="animate-lb-open"
           style={{
             transform: dragTransform,
             opacity: dragOpacity,
-            transition: isDragging ? 'none' : 'transform 0.2s ease-out, opacity 0.2s ease-out'
+            transition: isDragging ? 'none' : 'transform 200ms ease-out, opacity 200ms ease-out'
           }}
           onClick={e => { e.stopPropagation(); toggleZoom() }}
         >
@@ -264,7 +282,7 @@ const Lightbox = ({
             ref={imgRef}
             src={photo.dataUrl}
             alt={photo.note || 'Photo'}
-            className="max-w-full max-h-full object-contain rounded-lg"
+            className="max-w-full max-h-full object-contain rounded"
             style={{
               transform: `scale(${zoom})`,
               transformOrigin: 'center center',
@@ -279,7 +297,7 @@ const Lightbox = ({
       {/* Bottom info bar */}
       {(photo.note || showInfo) && (
         <div
-          className="absolute bottom-0 left-0 right-0 px-4 py-4 transition-all duration-300"
+          className="absolute bottom-0 left-0 right-0 px-4 py-4 transition-all duration-200"
           style={{
             background: showControls ? 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)' : 'transparent',
             opacity: showControls ? 1 : 0
@@ -287,11 +305,11 @@ const Lightbox = ({
           onClick={e => e.stopPropagation()}
         >
           {photo.note && (
-            <p className="text-sm text-white/90 text-center max-w-lg mx-auto leading-relaxed mb-1">
+            <p className="text-sm text-white-80 text-center max-w-lg mx-auto leading-relaxed mb-1">
               {photo.note}
             </p>
           )}
-          <p className="text-xs text-white/40 text-center">
+          <p className="text-xs text-white-40 text-center">
             {info.resolution} · {info.fileSize} · {info.date}
           </p>
         </div>

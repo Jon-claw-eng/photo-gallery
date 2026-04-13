@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { X, FolderPlus, Star, Grid3X3, Trash2, Edit3 } from 'lucide-react'
+import { X, FolderPlus, Star, Grid3X3, Trash2, Edit3, Heart } from 'lucide-react'
 
 // ─── useIsMobile ──────────────────────────────────────────────────────────────
 export const useIsMobile = () => {
@@ -56,31 +56,38 @@ export const BottomSheet = ({ isOpen, onClose, children, title }) => {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-[80] glass-overlay flex flex-col justify-end animate-fade-in" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-[80] flex flex-col justify-end animate-fade-in"
+      style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}
+      onClick={onClose}
+    >
       <div
         ref={sheetRef}
-        className="relative bg-surface rounded-t-2xl border-t border-border overflow-hidden transition-transform duration-200 ease-out"
-        style={{ maxHeight: '70vh' }}
+        className="relative overflow-hidden transition-transform duration-200 ease-out animate-sheet-up"
+        style={{ maxHeight: '70vh', backgroundColor: 'var(--surface)' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Drag handle */}
         <div className="flex justify-center pt-3 pb-2">
-          <div className="w-9 h-1 rounded-full bg-border" />
+          <div className="sheet-handle" />
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-4 pb-3 border-b border-border">
+        <div className="flex items-center justify-between px-4 pb-3" style={{ borderBottom: '1px solid var(--border)' }}>
           <h2 className="text-sm font-semibold text-text">{title || 'Collections'}</h2>
           <button
             onClick={onClose}
-            className="p-1.5 text-textSecondary hover:text-text hover:bg-card rounded-btn transition-all"
+            className="p-1.5 rounded transition-colors duration-100"
+            style={{ color: 'var(--text-secondary)' }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text)' }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)' }}
           >
             <X size={16} />
           </button>
         </div>
 
         {/* Content */}
-        <div className="overflow-y-auto pb-safe" style={{ maxHeight: 'calc(70vh - 60px)' }}>
+        <div className="overflow-y-auto" style={{ maxHeight: 'calc(70vh - 60px)' }}>
           {children}
         </div>
       </div>
@@ -111,30 +118,31 @@ export const MobileCollectionsSheet = ({ isOpen, onClose, collections, photos, a
           <button
             key={item.id ?? 'all'}
             onClick={() => { onSelect(item.id); onClose() }}
-            className={`w-full text-left px-3 py-3 rounded-btn text-sm flex items-center gap-3 transition-all duration-150 ${
-              activeCollection === item.id
-                ? 'bg-brand/10 text-brand border-l-2 border-brand'
-                : 'text-textSecondary hover:text-text hover:bg-card border-l-2 border-transparent'
+            className={`w-full text-left px-3 py-3 rounded text-sm flex items-center gap-3 transition-all duration-100 ${
+              activeCollection === item.id ? 'active' : ''
             }`}
+            style={activeCollection === item.id ? {} : { color: 'var(--text-secondary)' }}
+            onMouseEnter={e => { if (activeCollection !== item.id) e.currentTarget.style.backgroundColor = 'var(--border)' }}
+            onMouseLeave={e => { if (activeCollection !== item.id) e.currentTarget.style.backgroundColor = 'transparent' }}
           >
             <item.icon size={16} />
             <span className="flex-1">{item.label}</span>
-            <span className="text-xs text-textSecondary/60">{item.count}</span>
+            <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{item.count}</span>
           </button>
         ))}
 
         {/* Collections */}
         <div className="pt-3 pb-1">
           <div className="flex items-center justify-between px-3 pb-2">
-            <span className="text-[11px] uppercase tracking-wider text-textSecondary font-semibold">Collections</span>
-            <button className="p-1 text-textSecondary hover:text-brand transition-all">
+            <span className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: 'var(--text-tertiary)' }}>Collections</span>
+            <button className="p-1 rounded transition-colors" style={{ color: 'var(--text-secondary)' }}>
               <FolderPlus size={13} />
             </button>
           </div>
         </div>
 
         {collections.length === 0 && (
-          <p className="text-xs text-textSecondary/50 px-3 py-4 text-center">No collections yet</p>
+          <p className="text-xs px-3 py-4 text-center" style={{ color: 'var(--text-tertiary)' }}>No collections yet</p>
         )}
 
         {collections.map(col => {
@@ -144,24 +152,25 @@ export const MobileCollectionsSheet = ({ isOpen, onClose, collections, photos, a
             <button
               key={col.id}
               onClick={() => { onSelect(col.id); onClose() }}
-              className={`w-full text-left px-3 py-3 rounded-btn flex items-center gap-3 transition-all duration-150 ${
-                activeCollection === col.id
-                  ? 'bg-brand/10 text-brand border-l-2 border-brand'
-                  : 'text-textSecondary hover:text-text hover:bg-card border-l-2 border-transparent'
+              className={`w-full text-left px-3 py-3 rounded flex items-center gap-3 transition-all duration-100 ${
+                activeCollection === col.id ? 'active' : ''
               }`}
+              style={activeCollection === col.id ? {} : { color: 'var(--text-secondary)' }}
+              onMouseEnter={e => { if (activeCollection !== col.id) e.currentTarget.style.backgroundColor = 'var(--border)' }}
+              onMouseLeave={e => { if (activeCollection !== col.id) e.currentTarget.style.backgroundColor = 'transparent' }}
             >
-              <div className="w-9 h-9 rounded-btn overflow-hidden bg-card flex-shrink-0">
+              <div className="w-9 h-9 rounded overflow-hidden flex-shrink-0" style={{ backgroundColor: 'var(--card)' }}>
                 {cover ? (
                   <img src={cover.dataUrl} alt={col.name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <Grid3X3 size={14} className="text-textSecondary/40" />
+                    <Grid3X3 size={14} style={{ color: 'var(--text-tertiary)' }} />
                   </div>
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-text truncate">{col.name}</p>
-                <p className="text-[11px] text-textSecondary/60">{count} photos</p>
+                <p className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>{count} photos</p>
               </div>
             </button>
           )
@@ -175,9 +184,11 @@ export const MobileCollectionsSheet = ({ isOpen, onClose, collections, photos, a
 export const FAB = ({ onClick }) => (
   <button
     onClick={onClick}
-    className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-brand hover:bg-brand-light text-white rounded-full shadow-lg shadow-brand/30 flex items-center justify-center transition-all duration-150 hover:scale-105 active:scale-95"
-    style={{ boxShadow: '0 4px 20px rgba(255,107,0,0.4)' }}
+    className="fixed bottom-6 right-6 z-50 w-14 h-14 text-white rounded-full flex items-center justify-center transition-all duration-100"
+    style={{ backgroundColor: 'var(--accent)', boxShadow: '0 4px 20px rgba(255,107,0,0.4)' }}
     aria-label="Upload photo"
+    onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--accent-hover)'}
+    onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--accent)'}
   >
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M10 3V17M3 10H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -188,36 +199,50 @@ export const FAB = ({ onClick }) => (
 // ─── Mobile photo card actions ────────────────────────────────────────────────
 export const MobileQuickActions = ({ photo, onFavorite, onDelete, onAddToCollection, onClose }) => {
   return (
-    <div className="fixed inset-0 z-[75] glass-overlay flex items-end justify-center animate-fade-in" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-[75] flex items-end justify-center animate-fade-in"
+      style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}
+      onClick={onClose}
+    >
       <div
-        className="bg-surface rounded-t-2xl border-t border-border w-full max-w-sm p-4 pb-safe animate-scale-in"
+        className="rounded-t-lg w-full max-w-sm p-4 animate-scale-in"
+        style={{ backgroundColor: 'var(--surface)' }}
         onClick={e => e.stopPropagation()}
       >
         <div className="flex justify-center pb-3">
-          <div className="w-9 h-1 rounded-full bg-border" />
+          <div className="sheet-handle" />
         </div>
         <p className="text-sm font-medium text-text text-center mb-4 truncate px-4">{photo.note || 'Photo'}</p>
         <div className="grid grid-cols-3 gap-3">
           <button
             onClick={() => { onFavorite(photo.id); onClose() }}
-            className="flex flex-col items-center gap-1.5 p-3 rounded-btn bg-card border border-border hover:border-brand transition-all"
+            className="flex flex-col items-center gap-1.5 p-3 rounded transition-colors duration-100"
+            style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)' }}
           >
-            <Heart size={18} className={photo.isFavorite ? 'text-brand fill-brand' : 'text-textSecondary'} />
-            <span className="text-[10px] text-textSecondary">{photo.isFavorite ? 'Unfavorite' : 'Favorite'}</span>
+            <Heart size={18} style={photo.isFavorite ? { color: 'var(--accent)', fill: 'var(--accent)' } : { color: 'var(--text-secondary)' }} />
+            <span className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>{photo.isFavorite ? 'Unfavorite' : 'Favorite'}</span>
           </button>
           <button
             onClick={() => { onAddToCollection(photo.id); onClose() }}
-            className="flex flex-col items-center gap-1.5 p-3 rounded-btn bg-card border border-border hover:border-brand transition-all"
+            className="flex flex-col items-center gap-1.5 p-3 rounded transition-colors duration-100"
+            style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)' }}
           >
-            <FolderPlus size={18} className="text-textSecondary" />
-            <span className="text-[10px] text-textSecondary">Collection</span>
+            <FolderPlus size={18} style={{ color: 'var(--text-secondary)' }} />
+            <span className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>Collection</span>
           </button>
           <button
             onClick={() => { onDelete(photo.id); onClose() }}
-            className="flex flex-col items-center gap-1.5 p-3 rounded-btn bg-card border border-red-500/30 hover:border-red-500 transition-all"
+            className="flex flex-col items-center gap-1.5 p-3 rounded transition-colors duration-100"
+            style={{ backgroundColor: 'var(--card)', border: '1px solid rgba(239,68,68,0.3)' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--danger)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)' }}
           >
-            <Trash2 size={18} className="text-red-400" />
-            <span className="text-[10px] text-red-400">Delete</span>
+            <Trash2 size={18} style={{ color: 'var(--danger)' }} />
+            <span className="text-[10px]" style={{ color: 'var(--danger)' }}>Delete</span>
           </button>
         </div>
       </div>

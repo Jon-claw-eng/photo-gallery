@@ -12,36 +12,31 @@ export default {
         surface: 'var(--surface)',
         card: 'var(--card)',
         border: 'var(--border)',
-        borderHover: 'var(--border-hover)',
         text: 'var(--text)',
         textSecondary: 'var(--text-secondary)',
-        brand: 'var(--brand)',
-        brandLight: 'var(--brand-light)',
+        accent: 'var(--accent)',
       },
       fontFamily: {
         sans: ['Inter', 'Geist', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
-        'card': '12px',
-        'btn': '8px',
-        'modal': '16px',
+        'card': '8px',
+        'btn': '6px',
+        'modal': '12px',
       },
       transitionDuration: {
+        '100': '100ms',
         '150': '150ms',
         '200': '200ms',
         '250': '250ms',
-        '300': '300ms',
-        '350': '350ms',
       },
       transitionTimingFunction: {
         'ease': 'ease-out',
-        'spring': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
       },
       animation: {
-        'fade-in': 'fadeIn 0.15s ease-out both',
-        'scale-in': 'scaleIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both',
-        'card-appear': 'cardAppear 0.3s ease-out both',
-        'heart-bounce': 'heartBounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both',
+        'fade-in': 'fadeIn 200ms ease-out both',
+        'scale-in': 'scaleIn 200ms ease-out both',
+        'card-load': 'cardLoad 200ms ease-out both',
       },
       keyframes: {
         fadeIn: {
@@ -49,18 +44,12 @@ export default {
           '100%': { opacity: '1' },
         },
         scaleIn: {
-          '0%': { opacity: '0', transform: 'scale(0.95)' },
-          '100%': { opacity: '1', transform: 'scale(1)' },
+          '0%': { opacity: '0', transform: 'scale(0.96) translateY(8px)' },
+          '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
         },
-        cardAppear: {
-          '0%': { opacity: '0', transform: 'translateY(8px)' },
+        cardLoad: {
+          '0%': { opacity: '0', transform: 'translateY(12px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        heartBounce: {
-          '0%': { transform: 'scale(1)' },
-          '40%': { transform: 'scale(1.35)' },
-          '70%': { transform: 'scale(0.9)' },
-          '100%': { transform: 'scale(1)' },
         },
       },
     },

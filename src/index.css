@@ -16,7 +16,7 @@ html {
 
 body {
   font-family: 'Inter', 'Geist', system-ui, sans-serif;
-  background-color: #000000;
+  background-color: #0A0A0A;
   color: #FFFFFF;
   min-height: 100vh;
   overflow-x: hidden;
@@ -31,8 +31,8 @@ body {
 
 /* ─── Scrollbar ──────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -49,13 +49,13 @@ body {
 }
 
 ::selection {
-  background: rgba(59, 130, 246, 0.3);
+  background: rgba(255, 107, 0, 0.3);
   color: #fff;
 }
 
 /* ─── Focus ──────────────────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid rgba(59, 130, 246, 0.5);
+  outline: 2px solid rgba(255, 107, 0, 0.5);
   outline-offset: 2px;
 }
 
@@ -79,89 +79,251 @@ input, textarea, select, button {
   50% { opacity: 0.5; }
 }
 
-.animate-fade-in { animation: fade-in 0.15s ease; }
-.animate-scale-in { animation: scale-in 0.15s ease; }
-.animate-pulse { animation: pulse 1.5s ease-in-out infinite; }
+@keyframes card-appear {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-/* ─── Light Mode ─────────────────────────────────────────────────────────── */
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes heart-bounce {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.35); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+@keyframes checkbox-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.animate-fade-in { animation: fade-in 0.15s ease-out both; }
+.animate-scale-in { animation: scale-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-pulse { animation: pulse 1.5s ease-in-out infinite; }
+.animate-card-appear { animation: card-appear 0.3s ease-out both; }
+.animate-heart-bounce { animation: heart-bounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-checkbox-pop { animation: checkbox-pop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+/* ─── CSS Variables — Dark Mode (default) ───────────────────────────────── */
 :root,
 [data-theme="dark"] {
-  --bg: #000000;
-  --surface: #111111;
-  --card: #1a1a1a;
-  --border: #222222;
+  --bg: #0A0A0A;
+  --surface: #141414;
+  --card: #1C1C1C;
+  --border: #262626;
   --border-hover: #333333;
   --text: #FFFFFF;
-  --text-secondary: #888888;
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
+  --text-secondary: #8A8A8A;
+  --brand: #FF6B00;
+  --brand-light: #FF8C42;
   --red: #ef4444;
   --yellow: #eab308;
+
+  /* Glass */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-blur: blur(20px);
+  --glass-blur-heavy: blur(40px);
 }
 
+/* ─── CSS Variables — Light Mode ─────────────────────────────────────────── */
 [data-theme="light"] {
-  --bg: #FFFFFF;
-  --surface: #F7F7F5;
+  --bg: #FAFAFA;
+  --surface: #FFFFFF;
   --card: #FFFFFF;
-  --border: #E9E9E7;
-  --border-hover: #D4D4D2;
-  --text: #1A1A1A;
-  --text-secondary: #888888;
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
+  --border: #E5E5E5;
+  --border-hover: #D0D0D0;
+  --text: #0A0A0A;
+  --text-secondary: #6B6B6B;
+  --brand: #FF6B00;
+  --brand-light: #FF8C42;
   --red: #ef4444;
   --yellow: #eab308;
+
+  /* Glass */
+  --glass-bg: rgba(0, 0, 0, 0.03);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-blur: blur(20px);
+  --glass-blur-heavy: blur(40px);
 }
 
-/* ─── Tailwind Custom Classes ────────────────────────────────────────────── */
+/* ─── Tailwind Custom Classes (color) ───────────────────────────────────── */
 .bg-bg { background-color: var(--bg); }
 .bg-surface { background-color: var(--surface); }
 .bg-card { background-color: var(--card); }
-.bg-accent { background-color: var(--accent); }
-.bg-accent\/5 { background-color: rgba(59, 130, 246, 0.05); }
-.bg-accent\/10 { background-color: rgba(59, 130, 246, 0.1); }
-.bg-accent\/20 { background-color: rgba(59, 130, 246, 0.2); }
-.bg-black { background-color: #000000; }
-.bg-black\/50 { background-color: rgba(0, 0, 0, 0.5); }
-.bg-black\/60 { background-color: rgba(0, 0, 0, 0.6); }
-.bg-black\/70 { background-color: rgba(0, 0, 0, 0.7); }
-.bg-black\/80 { background-color: rgba(0, 0, 0, 0.8); }
-.bg-black\/90 { background-color: rgba(0, 0, 0, 0.9); }
-.bg-black\/95 { background-color: rgba(0, 0, 0, 0.95); }
-.bg-black\/10 { background-color: rgba(0, 0, 0, 0.1); }
-.bg-white\/10 { background-color: rgba(255, 255, 255, 0.1); }
-.bg-white\/15 { background-color: rgba(255, 255, 255, 0.15); }
+.bg-brand { background-color: var(--brand); }
+.bg-brand-light { background-color: var(--brand-light); }
 .bg-red-500\/10 { background-color: rgba(239, 68, 68, 0.1); }
 .bg-red-500\/20 { background-color: rgba(239, 68, 68, 0.2); }
 
+.bg-white\/5 { background-color: rgba(255, 255, 255, 0.05); }
+.bg-white\/10 { background-color: rgba(255, 255, 255, 0.10); }
+.bg-white\/15 { background-color: rgba(255, 255, 255, 0.15); }
+.bg-black\/30 { background-color: rgba(0, 0, 0, 0.30); }
+.bg-black\/40 { background-color: rgba(0, 0, 0, 0.40); }
+.bg-black\/50 { background-color: rgba(0, 0, 0, 0.50); }
+.bg-black\/60 { background-color: rgba(0, 0, 0, 0.60); }
+.bg-black\/70 { background-color: rgba(0, 0, 0, 0.70); }
+.bg-black\/80 { background-color: rgba(0, 0, 0, 0.80); }
+.bg-black\/90 { background-color: rgba(0, 0, 0, 0.90); }
+
 .border-border { border-color: var(--border); }
 .border-borderHover { border-color: var(--border-hover); }
-.border-text { border-color: var(--text); }
-.border-white\/10 { border-color: rgba(255, 255, 255, 0.1); }
-.border-white\/50 { border-color: rgba(255, 255, 255, 0.5); }
-.border-accent { border-color: var(--accent); }
-.border-accent\/30 { border-color: rgba(59, 130, 246, 0.3); }
-.border-dashed { border-style: dashed; }
+.border-white\/10 { border-color: rgba(255, 255, 255, 0.10); }
+.border-white\/20 { border-color: rgba(255, 255, 255, 0.20); }
+.border-white\/50 { border-color: rgba(255, 255, 255, 0.50); }
+.border-brand { border-color: var(--brand); }
 
 .text-text { color: var(--text); }
 .text-textSecondary { color: var(--text-secondary); }
 .text-white { color: #FFFFFF; }
-.text-white\/80 { color: rgba(255, 255, 255, 0.8); }
-.text-white\/50 { color: rgba(255, 255, 255, 0.5); }
-.text-accent { color: var(--accent); }
+.text-white\/80 { color: rgba(255, 255, 255, 0.80); }
+.text-white\/50 { color: rgba(255, 255, 255, 0.50); }
+.text-brand { color: var(--brand); }
 .text-red-400 { color: var(--red); }
 .text-yellow-400 { color: var(--yellow); }
 .text-black { color: #000000; }
+
+.shadow-brand-glow { box-shadow: 0 0 20px rgba(255, 107, 0, 0.3); }
 
 .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3); }
 .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3); }
 
 .placeholder-textSecondary\/50::placeholder { color: rgba(136, 136, 136, 0.5); }
 
-.ring-2 { box-shadow: 0 0 0 2px; }
-.ring-accent\/30 { --tw-ring-color: rgba(59, 130, 246, 0.3); }
+/* ─── Glass Morphism ─────────────────────────────────────────────────────── */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+}
 
-/* ─── Skeleton Loading ────────────────────────────────────────────────────── */
+.glass-card-heavy {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur-heavy);
+  -webkit-backdrop-filter: var(--glass-blur-heavy);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-nav {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(0, 0, 0, 0.60);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+[data-theme="light"] .glass-nav {
+  background: rgba(255, 255, 255, 0.80);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.glass-sidebar {
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  background: rgba(0, 0, 0, 0.40);
+  border-right: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+[data-theme="light"] .glass-sidebar {
+  background: rgba(255, 255, 255, 0.80);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.glass-upload-zone {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px dashed rgba(255, 255, 255, 0.20);
+}
+
+[data-theme="light"] .glass-upload-zone {
+  background: rgba(0, 0, 0, 0.03);
+  border: 2px dashed rgba(0, 0, 0, 0.10);
+}
+
+.glass-overlay {
+  backdrop-filter: blur(40px) saturate(150%);
+  -webkit-backdrop-filter: blur(40px) saturate(150%);
+  background: rgba(0, 0, 0, 0.80);
+}
+
+[data-theme="light"] .glass-overlay {
+  background: rgba(0, 0, 0, 0.60);
+}
+
+.glass-modal {
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  background: rgba(20, 20, 20, 0.90);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+[data-theme="light"] .glass-modal {
+  background: rgba(255, 255, 255, 0.90);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.glass-toast {
+  background: rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+}
+
+[data-theme="light"] .glass-toast {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+}
+
+.glass-checkbox {
+  background: rgba(0, 0, 0, 0.50);
+  border: 2px solid rgba(255, 255, 255, 0.50);
+}
+
+.glass-checkbox-checked {
+  background: var(--brand);
+  border-color: var(--brand);
+  box-shadow: 0 0 12px rgba(255, 107, 0, 0.4);
+}
+
+[data-theme="light"] .glass-checkbox {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.20);
+}
+
+/* ─── Photo Card Hover Glass ────────────────────────────────────────────── */
+.photo-card-hover {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+}
+
+[data-theme="light"] .photo-card-hover {
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+/* ─── Lightbox Glass Container ──────────────────────────────────────────── */
+.lightbox-photo-container {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+[data-theme="light"] .lightbox-photo-container {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+}
+
+/* ─── Skeleton Loading ──────────────────────────────────────────────────── */
 .skeleton {
   background: linear-gradient(
     90deg,
@@ -173,16 +335,10 @@ input, textarea, select, button {
   animation: skeleton-shimmer 1.5s ease-in-out infinite;
 }
 
-@keyframes skeleton-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
 /* ─── Masonry ────────────────────────────────────────────────────────────── */
 .masonry {
   column-count: 1;
-  column-gap: 12px;
-  transition: column-count 0.2s ease;
+  column-gap: 16px;
 }
 
 @media (min-width: 640px) {
@@ -199,24 +355,27 @@ input, textarea, select, button {
 
 .masonry-item {
   break-inside: avoid;
-  margin-bottom: 12px;
-  transition: transform 0.15s ease;
+  margin-bottom: 16px;
 }
 
 /* ─── Transitions ─────────────────────────────────────────────────────────── */
 * {
   transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
-  transition-timing-function: ease;
+  transition-timing-function: ease-out;
   transition-duration: 150ms;
 }
 
-button, a {
-  transition-property: background-color, border-color, color, opacity, transform, box-shadow;
-  transition-timing-function: ease;
+button, a, input, textarea, select {
+  transition-property: background-color, border-color, color, opacity, transform, box-shadow, backdrop-filter;
+  transition-timing-function: ease-out;
   transition-duration: 150ms;
 }
 
-/* Override for specific transitions */
-.animate-fade-in, .animate-scale-in {
+/* Override for animations — no transition */
+.animate-fade-in,
+.animate-scale-in,
+.animate-card-appear,
+.animate-heart-bounce,
+.animate-checkbox-pop {
   transition: none;
 }
